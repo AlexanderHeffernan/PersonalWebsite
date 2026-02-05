@@ -10,5 +10,6 @@ export default defineNuxtConfig({
         types: ['node']
       }
     }
-  }
+  },
+  css: ['~/assets/css/main.css']
 })
