@@ -4,6 +4,11 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   modules: ['@nuxt/eslint'],
   typescript: {
-    typeCheck: false,
+    typeCheck: true,
+    tsConfig: {
+      compilerOptions: {
+        types: ['node']
+      }
+    }
   }
 })

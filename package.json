@@ -8,7 +8,8 @@
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
-    "typecheck": "nuxt typecheck"
+    "typecheck": "nuxt typecheck",
+    "migrate": "node server/db/migrate.ts"
   },
   "dependencies": {
     "@nuxt/eslint": "^1.13.0",
@@ -19,6 +20,8 @@
   },
   "devDependencies": {
     "@nuxt/devtools": "^3.1.1",
+    "@types/better-sqlite3": "^7.6.13",
+    "@types/node": "^25.2.1",
     "typescript": "^5.9.3",
     "vue-tsc": "^3.2.4"
   }

@@ -1,5 +1,13 @@
 <script setup lang="ts">
-const { data: projects } = await useFetch('/api/projects');
+type Project = {
+  id: number
+  name: string
+  created_at: string
+}
+
+const { data: projects } = await useFetch<Project[]>('/api/projects', {
+  default: () => []
+})
 </script>
 
 <template>
