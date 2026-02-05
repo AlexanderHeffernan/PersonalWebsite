@@ -13,6 +13,6 @@
 }
 
 .layout__content {
-  padding: var(--space-8) var(--space-6);
+  padding: 0;
 }
 </style>

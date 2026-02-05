@@ -111,6 +111,9 @@ body {
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: var(--secondary) var(--background);
 }
 
 a {
@@ -156,6 +159,10 @@ p {
   margin: 0 0 var(--space-4);
 }
 
+main {
+  min-height: 100vh;
+}
+
 button,
 input,
 textarea,
@@ -167,7 +174,27 @@ select {
 /* Technical grid overlay */
 .grid-pattern {
   background-image:
-    linear-gradient(to right, rgba(255, 87, 34, 0.05) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 87, 34, 0.05) 1px, transparent 1px);
+    linear-gradient(to right, rgba(255, 87, 34, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 87, 34, 0.03) 1px, transparent 1px);
   background-size: 32px 32px;
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--background);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--secondary);
+  border-radius: 999px;
+  border: 1px solid var(--border);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: color-mix(in srgb, var(--secondary), #ffffff 10%);
+  border-color: color-mix(in srgb, var(--border), #ffffff 20%);
 }
