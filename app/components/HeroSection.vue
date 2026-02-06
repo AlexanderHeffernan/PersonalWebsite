@@ -1,4 +1,21 @@
 <script setup lang="ts">
+interface GitHubActivity {
+  isActive: boolean
+  lastCommit: {
+    message: string
+    hoursAgo: number
+    timeText: string
+    url: string
+  } | null
+  weekCommits: number
+  streak: number
+  languages: Record<string, number>
+  currentRepo: string | null
+  timeOfDay: 'morning' | 'office' | 'evening' | 'night' | 'sleep'
+}
+
+const { data: activity } = await useFetch<GitHubActivity>('/api/github/activity')
+
 const mediaRef = ref<HTMLElement | null>(null)
 
 let rafId: number | null = null
@@ -96,7 +113,8 @@ onBeforeUnmount(() => {
             </a>
           </div>
           <div class="hero__meta">
-            Specializing in AI-literate workflows • Production-grade quality
+            <ActivityTicker v-if="activity" :activity="activity" />
+            <span v-else>Building quality software • One commit at a time</span>
           </div>
         </div>
         <div ref="mediaRef" class="hero__media">
@@ -175,6 +193,13 @@ onBeforeUnmount(() => {
   color: var(--muted-foreground);
   max-width: 32rem;
   margin: 0;
+  white-space: nowrap;
+}
+
+@media (max-width: 640px) {
+  .hero__subtitle {
+    white-space: normal;
+  }
 }
 
 .hero__actions {
