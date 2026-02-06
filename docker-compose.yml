@@ -1,0 +1,25 @@
+version: '3.8'
+
+# NOTE: Replace YOUR_GITHUB_USERNAME with your actual GitHub username
+# Or set IMAGE_NAME environment variable before running docker-compose
+
+services:
+  app:
+    image: ${IMAGE_NAME:-ghcr.io/YOUR_GITHUB_USERNAME/personal-website:latest}
+    container_name: personal-website
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+    env_file:
+      - .env
+    volumes:
+      - ./data:/app/data
+      - ./scripts:/app/scripts:ro
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
