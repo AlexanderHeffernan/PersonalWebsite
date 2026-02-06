@@ -12,8 +12,10 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm ci
 
-# Copy source and build
+# Copy source, regenerate types, and build
 COPY . .
+# Re-run prepare to regenerate types for copied files
+RUN npm run postinstall
 RUN npm run build
 
 # Production stage
