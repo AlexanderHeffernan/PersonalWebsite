@@ -3,6 +3,9 @@
 # Build stage
 FROM node:20-alpine AS builder
 
+# Install build dependencies for native modules
+RUN apk add --no-cache python3 make g++ sqlite-dev
+
 WORKDIR /app
 
 # Copy package files
@@ -16,14 +19,15 @@ RUN npm run build
 # Production stage
 FROM node:20-alpine
 
+# Install sqlite-libs (required for better-sqlite3 at runtime)
+RUN apk add --no-cache sqlite-libs
+
 WORKDIR /app
 
 # Copy built application
 COPY --from=builder /app/.output ./.output
 COPY --from=builder /app/package*.json ./
-
-# Install production dependencies only
-RUN npm ci --omit=dev
+COPY --from=builder /app/node_modules ./node_modules
 
 # Create data directory for SQLite
 RUN mkdir -p /app/data
