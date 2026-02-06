@@ -4,5 +4,6 @@
     <FeaturedProjects />
     <AboutSection />
     <WorkExperience />
+    <Education />
   </main>
 </template>

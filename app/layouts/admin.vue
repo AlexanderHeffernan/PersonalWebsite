@@ -4,6 +4,7 @@ const route = useRoute()
 const navItems = [
   { path: '/admin/projects', label: 'Projects', icon: 'folder' },
   { path: '/admin/experience', label: 'Experience', icon: 'briefcase' },
+  { path: '/admin/education', label: 'Education', icon: 'graduation-cap' },
   { path: '/admin/about', label: 'About', icon: 'user' },
   { path: '/admin/writing', label: 'Writing', icon: 'file' },
 ]
@@ -39,6 +40,9 @@ const handleLogout = async () => {
             </svg>
             <svg v-else-if="item.icon === 'briefcase'" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <rect width="20" height="14" x="2" y="7" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+            </svg>
+            <svg v-else-if="item.icon === 'graduation-cap'" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/>
             </svg>
             <svg v-else-if="item.icon === 'user'" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/>
