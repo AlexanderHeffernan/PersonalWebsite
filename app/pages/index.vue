@@ -5,5 +5,6 @@
     <AboutSection />
     <WorkExperience />
     <Education />
+    <WritingList />
   </main>
 </template>

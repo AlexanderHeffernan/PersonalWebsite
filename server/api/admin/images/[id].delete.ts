@@ -10,7 +10,16 @@ interface ImageRow {
 export default defineEventHandler((event) => {
   const id = getRouterParam(event, 'id')
 
-  const image = db.prepare('SELECT id, url FROM project_images WHERE id = ?').get(id) as ImageRow | undefined
+  // Try project_images first
+  let image = db.prepare('SELECT id, url FROM project_images WHERE id = ?').get(id) as ImageRow | undefined
+  let table = 'project_images'
+
+  // If not found, try writing_post_images
+  if (!image) {
+    image = db.prepare('SELECT id, url FROM writing_post_images WHERE id = ?').get(id) as ImageRow | undefined
+    table = 'writing_post_images'
+  }
+
   if (!image) {
     throw createError({ statusCode: 404, message: 'Image not found' })
   }
@@ -24,7 +33,7 @@ export default defineEventHandler((event) => {
   }
 
   // Delete from database
-  db.prepare('DELETE FROM project_images WHERE id = ?').run(id)
+  db.prepare(`DELETE FROM ${table} WHERE id = ?`).run(id)
 
   return { success: true }
 })

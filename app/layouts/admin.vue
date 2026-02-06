@@ -5,8 +5,8 @@ const navItems = [
   { path: '/admin/projects', label: 'Projects', icon: 'folder' },
   { path: '/admin/experience', label: 'Experience', icon: 'briefcase' },
   { path: '/admin/education', label: 'Education', icon: 'graduation-cap' },
+  { path: '/admin/writing', label: 'Writing', icon: 'pen' },
   { path: '/admin/about', label: 'About', icon: 'user' },
-  { path: '/admin/writing', label: 'Writing', icon: 'file' },
 ]
 
 const isActive = (path: string) => route.path === path || route.path.startsWith(path + '/')
@@ -44,11 +44,11 @@ const handleLogout = async () => {
             <svg v-else-if="item.icon === 'graduation-cap'" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/>
             </svg>
+            <svg v-else-if="item.icon === 'pen'" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/>
+            </svg>
             <svg v-else-if="item.icon === 'user'" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/>
-            </svg>
-            <svg v-else-if="item.icon === 'file'" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/>
             </svg>
             <span>{{ item.label }}</span>
           </NuxtLink>
