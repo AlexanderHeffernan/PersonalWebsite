@@ -1,4 +1,5 @@
 import db from '../../../utils/db'
+import { getUploadsDir } from '../../../utils/uploads'
 import fs from 'node:fs'
 import path from 'node:path'
 
@@ -19,8 +20,10 @@ export default defineEventHandler((event) => {
 
   // Delete image files
   for (const image of images) {
-    if (image.url.startsWith('/uploads/')) {
-      const filePath = path.join(process.cwd(), 'public', image.url)
+    // Support both old (/uploads/...) and new (/api/uploads/...) URL formats
+    const urlPath = image.url.replace(/^\/api\/uploads\//, '').replace(/^\/uploads\//, '')
+    if (urlPath !== image.url) {
+      const filePath = path.join(getUploadsDir(), urlPath)
       if (fs.existsSync(filePath)) {
         fs.unlinkSync(filePath)
       }

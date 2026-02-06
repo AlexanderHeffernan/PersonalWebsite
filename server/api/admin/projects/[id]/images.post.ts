@@ -1,4 +1,5 @@
 import db from '../../../../utils/db'
+import { getUploadsDir } from '../../../../utils/uploads'
 import fs from 'node:fs'
 import path from 'node:path'
 
@@ -31,7 +32,7 @@ export default defineEventHandler(async (event) => {
   // Generate unique filename
   const ext = file.filename?.split('.').pop() || 'jpg'
   const filename = `${id}-${Date.now()}.${ext}`
-  const uploadDir = path.join(process.cwd(), 'public', 'uploads', 'projects')
+  const uploadDir = getUploadsDir('projects')
   const filePath = path.join(uploadDir, filename)
 
   // Ensure directory exists
@@ -51,11 +52,11 @@ export default defineEventHandler(async (event) => {
   const result = db.prepare(`
     INSERT INTO project_images (project_id, url, alt_text, sort_order)
     VALUES (?, ?, ?, ?)
-  `).run(id, `/uploads/projects/${filename}`, altText, maxOrder.max + 1)
+  `).run(id, `/api/uploads/projects/${filename}`, altText, maxOrder.max + 1)
 
   return {
     id: result.lastInsertRowid,
-    url: `/uploads/projects/${filename}`,
+    url: `/api/uploads/projects/${filename}`,
     alt: altText,
     sortOrder: maxOrder.max + 1,
   }

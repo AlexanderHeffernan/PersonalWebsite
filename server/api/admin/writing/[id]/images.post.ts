@@ -1,5 +1,6 @@
 import { createError, readMultipartFormData, getRouterParam } from 'h3'
 import db from '../../../../utils/db'
+import { getUploadsDir } from '../../../../utils/uploads'
 import { writeFile, mkdir } from 'fs/promises'
 import { join } from 'path'
 import { randomUUID } from 'crypto'
@@ -56,7 +57,7 @@ export default defineEventHandler(async (event) => {
   const filename = `${randomUUID()}.${ext}`
   
   // Ensure uploads directory exists
-  const uploadsDir = join(process.cwd(), 'public', 'uploads', 'writing')
+  const uploadsDir = getUploadsDir('writing')
   await mkdir(uploadsDir, { recursive: true })
   
   // Save file
@@ -74,7 +75,7 @@ export default defineEventHandler(async (event) => {
     RETURNING *
   `)
 
-  const row: any = stmt.get(postId, `/uploads/writing/${filename}`, altText, sortOrder)
+  const row: any = stmt.get(postId, `/api/uploads/writing/${filename}`, altText, sortOrder)
 
   return {
     id: row.id,
