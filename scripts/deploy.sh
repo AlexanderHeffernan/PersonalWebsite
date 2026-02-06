@@ -31,7 +31,7 @@ $COMPOSE pull
 echo "Starting containers..."
 $COMPOSE up -d
 
-echo "Running migrations..."
+echo "Running migrations (entrypoint runs them automatically, this is a safety net)..."
 $COMPOSE exec -T app node /app/scripts/migrate.js || echo "Migration completed or no migrations needed"
 
 echo "Checking health..."

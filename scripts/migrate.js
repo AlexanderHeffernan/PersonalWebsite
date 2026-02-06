@@ -2,8 +2,8 @@ import Database from 'better-sqlite3'
 import { readdirSync, readFileSync } from 'fs'
 import { join } from 'path'
 
-const DB_PATH = process.env.DB_PATH || '/app/data/database.sqlite'
-const MIGRATIONS_DIR = '/app/scripts/migrations'
+const DB_PATH = process.env.DB_PATH || '/app/data/app.db'
+const MIGRATIONS_DIR = process.env.MIGRATIONS_DIR || '/app/scripts/migrations'
 
 function runMigrations() {
   console.log('Running migrations...')
