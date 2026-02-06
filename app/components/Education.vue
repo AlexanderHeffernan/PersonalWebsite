@@ -19,10 +19,10 @@ const { data: educationList } = await useFetch<Education[]>('/api/education')
       <!-- Section header -->
       <div class="education__header">
         <h2 class="education__title">
-          <span>Education</span>
+          Formal <span>Education</span>
         </h2>
         <p class="education__subtitle">
-          Academic foundation in computer science and software engineering.
+          Building a foundation in software engineering and artificial intelligence.
         </p>
       </div>
 

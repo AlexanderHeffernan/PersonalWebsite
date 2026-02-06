@@ -1,21 +1,5 @@
 <script setup lang="ts">
 const isLight = ref(false);
-
-const applyTheme = (value: boolean) => {
-  document.documentElement.classList.toggle('light', value);
-  localStorage.setItem('theme', value ? 'light' : 'dark');
-};
-
-onMounted(() => {
-  const saved = localStorage.getItem('theme');
-  const shouldUseLight = saved === 'light';
-  isLight.value = shouldUseLight;
-  document.documentElement.classList.toggle('light', shouldUseLight);
-});
-
-watch(isLight, (value) => {
-  applyTheme(value);
-});
 </script>
 
 <template>
@@ -30,17 +14,6 @@ watch(isLight, (value) => {
         <NuxtLink to="/#writing">Blog</NuxtLink>
         <NuxtLink to="/#contact">Contact</NuxtLink>
       </nav>
-      <button
-        type="button"
-        class="site-header__toggle"
-        :aria-pressed="isLight"
-        :aria-label="isLight ? 'Switch to dark mode' : 'Switch to light mode'"
-        @click="isLight = !isLight"
-      >
-        <span class="site-header__toggle-icon" aria-hidden="true">
-          <FontAwesomeIcon :icon="isLight ? ['fas', 'sun'] : ['fas', 'moon']" />
-        </span>
-      </button>
     </div>
   </header>
 </template>

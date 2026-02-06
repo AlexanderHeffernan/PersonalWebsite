@@ -21,7 +21,7 @@ const { data: experiences } = await useFetch<WorkExperience[]>('/api/experience'
           Work <span>Experience</span>
         </h2>
         <p class="experience__subtitle">
-          Professional roles building production systems and leading engineering teams.
+          Hands-on experience in small teams, building and maintaining real-world software.
         </p>
       </div>
 

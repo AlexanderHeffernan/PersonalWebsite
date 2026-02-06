@@ -55,7 +55,7 @@ const handleSubmit = async () => {
               Get in <span>Touch</span>
             </h2>
             <p class="contact__subtitle">
-              I'm always interested in hearing about new projects, opportunities, or just having a conversation about software engineering and AI.
+              I’m always open to new opportunities—whether it’s a collaboration or a job inquiry, feel free to reach out!
             </p>
           </div>
 
@@ -173,6 +173,7 @@ const handleSubmit = async () => {
 .contact {
   padding: var(--space-24, 6rem) var(--space-4, 1rem);
   border-top: 1px solid var(--border);
+  background-color: var(--muted);
 }
 
 .contact__container {

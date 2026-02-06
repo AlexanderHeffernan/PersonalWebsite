@@ -46,6 +46,7 @@ const { data: about } = await useFetch<AboutContent>('/api/about')
 .about {
   padding: var(--space-24, 6rem) var(--space-6);
   border-top: 1px solid var(--border);
+  background-color: var(--muted);
 }
 
 .about__container {
