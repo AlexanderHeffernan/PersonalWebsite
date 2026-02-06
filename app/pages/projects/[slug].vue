@@ -28,18 +28,12 @@ if (error.value) {
   throw createError({ statusCode: 404, message: 'Project not found' })
 }
 
+const { renderMarkdown } = useMarkdown()
+
 const selectedImage = ref(0)
 
 const contentHtml = computed(() => {
-  if (!project.value?.content) return ''
-  return project.value.content
-    .replace(/^## (.+)$/gm, '<h2>$1</h2>')
-    .replace(/^### (.+)$/gm, '<h3>$1</h3>')
-    .replace(/^- (.+)$/gm, '<li>$1</li>')
-    .replace(/(<li>.+<\/li>\n?)+/g, '<ul>$&</ul>')
-    .replace(/\n\n/g, '</p><p>')
-    .replace(/^(?!<[hul])(.+)$/gm, '<p>$1</p>')
-    .replace(/<p><\/p>/g, '')
+  return renderMarkdown(project.value?.content || '')
 })
 </script>
 
@@ -92,7 +86,9 @@ const contentHtml = computed(() => {
             </div>
 
             <!-- Content sections -->
-            <div v-if="project.content" class="prose" v-html="contentHtml" />
+            <ClientOnly>
+              <div v-if="project.content" class="prose" v-html="contentHtml" />
+            </ClientOnly>
           </div>
 
           <!-- Sidebar -->
@@ -291,6 +287,7 @@ const contentHtml = computed(() => {
 
 /* Prose */
 .prose {
+  max-width: 72ch;
   color: var(--muted-foreground);
   line-height: 1.7;
 }
@@ -313,8 +310,30 @@ const contentHtml = computed(() => {
   margin: var(--space-8) 0 var(--space-3);
 }
 
+.prose :deep(h4) {
+  font-size: 1.1rem;
+  font-weight: var(--font-weight-semibold, 600);
+  color: var(--foreground);
+  margin: var(--space-6) 0 var(--space-2);
+}
+
 .prose :deep(p) {
   margin: 0 0 var(--space-4);
+}
+
+.prose :deep(a) {
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.prose :deep(a:hover) {
+  opacity: 0.8;
+}
+
+.prose :deep(strong) {
+  color: var(--foreground);
+  font-weight: var(--font-weight-semibold, 600);
 }
 
 .prose :deep(ul) {
@@ -323,13 +342,18 @@ const contentHtml = computed(() => {
   list-style: none;
 }
 
+.prose :deep(ol) {
+  margin: var(--space-4) 0;
+  padding-left: var(--space-6);
+}
+
 .prose :deep(li) {
   position: relative;
   margin-bottom: var(--space-2);
   padding-left: var(--space-4);
 }
 
-.prose :deep(li)::before {
+.prose :deep(ul > li)::before {
   content: "";
   position: absolute;
   left: 0;
@@ -338,6 +362,80 @@ const contentHtml = computed(() => {
   height: 6px;
   background: var(--accent);
   border-radius: 50%;
+}
+
+.prose :deep(ol > li) {
+  padding-left: 0;
+}
+
+.prose :deep(blockquote) {
+  margin: var(--space-6) 0;
+  padding: var(--space-4) var(--space-6);
+  border-left: 3px solid var(--accent);
+  background: var(--secondary);
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+}
+
+.prose :deep(blockquote p:last-child) {
+  margin-bottom: 0;
+}
+
+.prose :deep(code) {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.875em;
+  padding: 0.15em 0.4em;
+  background: var(--secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+}
+
+.prose :deep(pre) {
+  margin: var(--space-6) 0;
+  padding: var(--space-4);
+  background: var(--secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow-x: auto;
+}
+
+.prose :deep(pre code) {
+  padding: 0;
+  background: none;
+  border: none;
+  border-radius: 0;
+  font-size: var(--text-sm);
+  line-height: 1.6;
+}
+
+.prose :deep(table) {
+  width: 100%;
+  margin: var(--space-6) 0;
+  border-collapse: collapse;
+}
+
+.prose :deep(th) {
+  text-align: left;
+  font-weight: var(--font-weight-semibold, 600);
+  color: var(--foreground);
+  padding: var(--space-2) var(--space-4);
+  border-bottom: 2px solid var(--border);
+}
+
+.prose :deep(td) {
+  padding: var(--space-2) var(--space-4);
+  border-bottom: 1px solid var(--border);
+}
+
+.prose :deep(hr) {
+  margin: var(--space-8) 0;
+  border: none;
+  border-top: 1px solid var(--border);
+}
+
+.prose :deep(img) {
+  max-width: 100%;
+  border-radius: var(--radius-lg);
+  margin: var(--space-6) 0;
 }
 
 /* Sidebar */

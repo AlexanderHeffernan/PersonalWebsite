@@ -11,5 +11,13 @@ export default defineNuxtConfig({
       }
     }
   },
-  css: ['~/assets/css/main.css']
+  css: [
+    '~/assets/css/main.css',
+    'highlight.js/styles/github-dark.min.css',
+  ],
+  runtimeConfig: {
+    githubClientId: process.env.GITHUB_CLIENT_ID,
+    githubClientSecret: process.env.GITHUB_CLIENT_SECRET,
+    githubCallbackUrl: process.env.GITHUB_CALLBACK_URL || 'http://localhost:3000/api/auth/github/callback',
+  },
 })
