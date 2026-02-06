@@ -6,5 +6,6 @@
     <WorkExperience />
     <Education />
     <WritingList />
+    <ContactSection />
   </main>
 </template>
