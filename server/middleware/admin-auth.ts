@@ -1,4 +1,4 @@
-import { getSession } from '../utils/auth'
+import { getAuthSession } from '../utils/auth'
 
 export default defineEventHandler((event) => {
   const path = getRequestURL(event).pathname
@@ -8,7 +8,7 @@ export default defineEventHandler((event) => {
     return
   }
 
-  const session = getSession(event)
+  const session = getAuthSession(event)
 
   if (!session) {
     throw createError({ statusCode: 401, message: 'Authentication required' })

@@ -39,7 +39,7 @@ export function createSession(event: H3Event, githubUserId: number, githubUserna
   return sessionId
 }
 
-export function getSession(event: H3Event): Session | null {
+export function getAuthSession(event: H3Event): Session | null {
   const sessionId = getCookie(event, SESSION_COOKIE)
   if (!sessionId) return null
 

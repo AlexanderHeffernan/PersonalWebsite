@@ -1,7 +1,7 @@
-import { getSession } from '../../utils/auth'
+import { getAuthSession } from '../../utils/auth'
 
 export default defineEventHandler((event) => {
-  const session = getSession(event)
+  const session = getAuthSession(event)
 
   if (!session) {
     throw createError({ statusCode: 401, message: 'Not authenticated' })
