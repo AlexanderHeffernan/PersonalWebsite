@@ -108,7 +108,7 @@ onBeforeUnmount(() => {
             <a class="btn btn--secondary" href="#contact">
               Contact
             </a>
-            <a class="btn btn--ghost" href="/resume.pdf">
+            <a class="btn btn--secondary" href="/resume.pdf">
               Resume
             </a>
           </div>
@@ -242,16 +242,6 @@ onBeforeUnmount(() => {
   border-color: var(--accent);
 }
 
-.btn--ghost {
-  background: transparent;
-  color: var(--foreground);
-  border-color: var(--border);
-}
-
-.btn--ghost:hover {
-  border-color: var(--accent);
-}
-
 .hero__meta {
   padding-top: var(--space-6);
   border-top: 1px solid var(--border);
@@ -259,6 +249,7 @@ onBeforeUnmount(() => {
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--muted-foreground);
+  width: 100%;
 }
 
 .hero__media {
