@@ -355,5 +355,9 @@ onBeforeUnmount(() => {
   .hero__actions {
     justify-content: center;
   }
+  
+  .hero__meta {
+    display: none;
+  }
 }
 </style>
