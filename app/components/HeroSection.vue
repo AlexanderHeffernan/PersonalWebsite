@@ -354,6 +354,7 @@ onBeforeUnmount(() => {
   .hero__grid {
     grid-template-columns: 1fr;
     text-align: center;
+    margin-top: 30px;
   }
 
   .hero__content {
