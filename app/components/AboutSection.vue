@@ -7,6 +7,8 @@ interface AboutContent {
 }
 
 const { data: about } = await useFetch<AboutContent>('/api/about')
+
+const expanded = ref(false)
 </script>
 
 <template>
@@ -18,11 +20,33 @@ const { data: about } = await useFetch<AboutContent>('/api/about')
           <h2 class="about__title">
             About <span>Me</span>
           </h2>
-          <div class="about__paragraphs">
-            <p v-for="(paragraph, index) in about?.bioParagraphs" :key="index" class="about__text">
-              {{ paragraph }}
-            </p>
+          <div class="about__paragraphs-wrapper" :class="{ 'about__paragraphs-wrapper--expanded': expanded }">
+            <div class="about__paragraphs">
+              <p v-for="(paragraph, index) in about?.bioParagraphs" :key="index" class="about__text">
+                {{ paragraph }}
+              </p>
+            </div>
+            <div class="about__fade" />
           </div>
+          <button
+            class="about__toggle"
+            :aria-expanded="expanded"
+            :aria-label="expanded ? 'Collapse bio' : 'Expand bio'"
+            @click="expanded = !expanded"
+          >
+            <span class="about__toggle-line" />
+            <svg
+              class="about__toggle-chevron"
+              :class="{ 'about__toggle-chevron--up': expanded }"
+              width="16"
+              height="16"
+              viewBox="0 0 16 16"
+              fill="none"
+            >
+              <path d="M4 6L8 10L12 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+            <span class="about__toggle-line" />
+          </button>
         </div>
 
         <!-- Highlights -->
@@ -82,6 +106,79 @@ const { data: about } = await useFetch<AboutContent>('/api/about')
 
 .about__title span {
   color: var(--accent);
+}
+
+.about__paragraphs-wrapper {
+  position: relative;
+  max-height: 9em;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+}
+
+.about__paragraphs-wrapper--expanded {
+  max-height: 100em;
+}
+
+.about__fade {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2em;
+  background: linear-gradient(to bottom, transparent, var(--muted));
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.about__paragraphs-wrapper--expanded .about__fade {
+  opacity: 0;
+}
+
+.about__toggle {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2, 0.5rem);
+  width: 100%;
+  padding: var(--space-2, 0.5rem) 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--muted-foreground);
+  transition: color 0.2s ease;
+}
+
+.about__toggle:hover {
+  color: var(--foreground);
+}
+
+.about__toggle-line {
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+.about__toggle-chevron {
+  flex-shrink: 0;
+  transition: transform 0.3s ease;
+}
+
+.about__toggle-chevron--up {
+  transform: rotate(180deg);
+}
+
+@media (min-width: 640px) {
+  .about__paragraphs-wrapper {
+    max-height: none;
+    overflow: visible;
+  }
+
+  .about__fade {
+    display: none;
+  }
+
+  .about__toggle {
+    display: none;
+  }
 }
 
 .about__paragraphs {
