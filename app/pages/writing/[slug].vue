@@ -128,10 +128,15 @@ if (error.value?.statusCode === 404) {
 
 .writing-post__hero {
   position: relative;
-  height: 60vh;
   min-height: 400px;
-  max-height: 600px;
   overflow: hidden;
+}
+
+@media (min-width: 768px) {
+  .writing-post__hero {
+    height: 60vh;
+    max-height: 600px;
+  }
 }
 
 .writing-post__hero-image-container {
@@ -159,15 +164,26 @@ if (error.value?.statusCode === 404) {
 .writing-post__hero-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(to top, var(--background) 0%, transparent 60%);
+  background:
+    linear-gradient(to top, var(--background) 0%, transparent 70%),
+    linear-gradient(to top, rgba(0, 0, 0, 0.4) 0%, transparent 80%);
 }
 
 .writing-post__hero-content {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
+  position: relative;
+  padding-top: 200px;
   padding-bottom: var(--space-12);
+  z-index: 1;
+}
+
+@media (min-width: 768px) {
+  .writing-post__hero-content {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding-top: 0;
+  }
 }
 
 .writing-post__container {
@@ -218,6 +234,7 @@ if (error.value?.statusCode === 404) {
   font-weight: var(--font-weight-bold);
   line-height: 1.2;
   margin: 0 0 var(--space-6);
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.5);
 }
 
 .writing-post__meta {
@@ -227,6 +244,7 @@ if (error.value?.statusCode === 404) {
   font-size: var(--text-sm);
   font-family: var(--font-mono, monospace);
   color: var(--muted-foreground);
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.5);
 }
 
 .writing-post__meta-item {
