@@ -95,6 +95,13 @@ const formatDate = (dateStr: string) => {
   margin: 0 auto;
 }
 
+@media (min-width: 640px) {
+  .writing__header,
+  .writing__list {
+    max-width: 800px;
+  }
+}
+
 .writing__header {
   display: flex;
   flex-direction: column;

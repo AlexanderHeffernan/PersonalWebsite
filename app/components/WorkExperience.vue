@@ -100,6 +100,13 @@ function toggleExpanded(id: number) {
   margin: 0 auto;
 }
 
+@media (min-width: 640px) {
+  .experience__header,
+  .experience__timeline {
+    max-width: 800px;
+  }
+}
+
 .experience__header {
   display: flex;
   flex-direction: column;
