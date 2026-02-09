@@ -10,6 +10,7 @@ interface Project {
   title: string
   description: string
   featuredOrder: number | null
+  published: number
   createdAt: string
 }
 
@@ -53,6 +54,9 @@ const handleDelete = async (id: number) => {
           <div class="project-card__meta">
             <span v-if="project.featuredOrder" class="project-card__badge">
               Featured #{{ project.featuredOrder }}
+            </span>
+            <span v-if="!project.published" class="project-card__badge project-card__badge--draft">
+              Draft
             </span>
             <span class="project-card__date">
               Created {{ new Date(project.createdAt).toLocaleDateString() }}
@@ -190,6 +194,11 @@ const handleDelete = async (id: number) => {
   border-radius: var(--radius-sm);
   font-size: var(--text-xs);
   font-weight: var(--font-weight-medium);
+}
+
+.project-card__badge--draft {
+  background: var(--muted-foreground);
+  color: var(--background);
 }
 
 .project-card__actions {

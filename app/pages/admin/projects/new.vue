@@ -16,6 +16,7 @@ const form = reactive({
   githubUrl: '',
   liveUrl: '',
   featuredOrder: null as number | null,
+  published: true,
   tags: [] as string[],
 })
 
@@ -151,6 +152,18 @@ Explain your approach..." />
       </div>
 
       <div class="edit-sidebar">
+        <!-- Publishing -->
+        <div class="card">
+          <h3 class="card__title card__title--sm">Publishing</h3>
+          <div class="form-group">
+            <label class="checkbox-label">
+              <input v-model="form.published" type="checkbox" class="checkbox-input" />
+              Published
+            </label>
+            <p class="form-hint">Only published projects appear on the public site</p>
+          </div>
+        </div>
+
         <!-- Featured -->
         <div class="card">
           <h3 class="card__title card__title--sm">Featured Order</h3>
@@ -411,6 +424,19 @@ Explain your approach..." />
   font-size: var(--text-xs);
   color: var(--muted-foreground);
   margin: var(--space-2) 0 0;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  cursor: pointer;
+}
+
+.checkbox-input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--accent);
 }
 
 .markdown-hint {

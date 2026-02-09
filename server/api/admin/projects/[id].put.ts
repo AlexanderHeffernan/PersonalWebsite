@@ -9,6 +9,7 @@ interface UpdateProjectBody {
   liveUrl?: string | null
   featuredOrder?: number | null
   tags?: string[]
+  published?: boolean
 }
 
 export default defineEventHandler(async (event) => {
@@ -37,6 +38,7 @@ export default defineEventHandler(async (event) => {
       live_url = ?,
       featured_order = ?,
       tags = COALESCE(?, tags),
+      published = COALESCE(?, published),
       updated_at = datetime('now')
     WHERE id = ?
   `).run(
@@ -48,6 +50,7 @@ export default defineEventHandler(async (event) => {
     body.liveUrl ?? null,
     body.featuredOrder ?? null,
     body.tags ? JSON.stringify(body.tags) : null,
+    body.published !== undefined ? (body.published ? 1 : 0) : null,
     id
   )
 

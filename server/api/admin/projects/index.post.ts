@@ -9,6 +9,7 @@ interface CreateProjectBody {
   liveUrl?: string
   featuredOrder?: number | null
   tags?: string[]
+  published?: boolean
 }
 
 export default defineEventHandler(async (event) => {
@@ -24,8 +25,8 @@ export default defineEventHandler(async (event) => {
   }
 
   const result = db.prepare(`
-    INSERT INTO projects (slug, title, description, content, github_url, live_url, featured_order, tags)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO projects (slug, title, description, content, github_url, live_url, featured_order, tags, published)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
   `).run(
     body.slug,
     body.title,
@@ -34,7 +35,8 @@ export default defineEventHandler(async (event) => {
     body.githubUrl || null,
     body.liveUrl || null,
     body.featuredOrder ?? null,
-    JSON.stringify(body.tags || [])
+    JSON.stringify(body.tags || []),
+    (body.published !== false) ? 1 : 0
   )
 
   return { id: result.lastInsertRowid }

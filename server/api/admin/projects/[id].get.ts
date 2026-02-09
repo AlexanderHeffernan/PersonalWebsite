@@ -9,6 +9,7 @@ interface ProjectRow {
   github_url: string | null
   live_url: string | null
   featured_order: number | null
+  published: number
   tags: string
   created_at: string
   updated_at: string
@@ -48,6 +49,7 @@ export default defineEventHandler((event) => {
     githubUrl: project.github_url,
     liveUrl: project.live_url,
     featuredOrder: project.featured_order,
+    published: project.published,
     tags: JSON.parse(project.tags),
     images: images.map(img => ({
       id: img.id,

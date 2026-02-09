@@ -20,7 +20,7 @@ export default defineEventHandler(() => {
       (SELECT url FROM project_images WHERE project_id = p.id ORDER BY sort_order LIMIT 1) as thumbnail_url,
       (SELECT alt_text FROM project_images WHERE project_id = p.id ORDER BY sort_order LIMIT 1) as thumbnail_alt
     FROM projects p
-    WHERE p.featured_order IS NOT NULL
+    WHERE p.featured_order IS NOT NULL AND p.published = 1
     ORDER BY p.featured_order ASC
   `).all() as ProjectRow[]
 

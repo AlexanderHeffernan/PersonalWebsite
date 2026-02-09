@@ -26,7 +26,7 @@ export default defineEventHandler((event) => {
   const project = db.prepare(`
     SELECT id, slug, title, description, content, github_url, live_url, tags, created_at, updated_at
     FROM projects
-    WHERE slug = ?
+    WHERE slug = ? AND published = 1
   `).get(slug) as ProjectRow | undefined
 
   if (!project) {

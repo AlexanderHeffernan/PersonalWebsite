@@ -17,58 +17,39 @@ const { data: projects } = await useFetch<FeaturedProject[]>('/api/projects/feat
   <section id="projects" class="projects">
     <div class="projects__container">
       <div class="projects__header">
-        <h2 class="projects__title">
-          Featured <span>Projects</span>
-        </h2>
-        <p class="projects__subtitle">
-          Work I’m proud of—from experiments to production launches.
-        </p>
+        <div>
+          <h2 class="projects__title">
+            Featured <span>Projects</span>
+          </h2>
+          <p class="projects__subtitle">
+            Work I'm proud of—from experiments to production launches.
+          </p>
+        </div>
+        <NuxtLink to="/projects" class="projects__view-all">
+          View All
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M5 12h14" />
+            <path d="m12 5 7 7-7 7" />
+          </svg>
+        </NuxtLink>
       </div>
 
       <div class="projects__grid">
-        <NuxtLink
+        <ProjectCard
           v-for="project in projects"
           :key="project.id"
-          :to="`/projects/${project.slug}`"
-          class="project-card"
-        >
-          <div class="project-card__content">
-            <div class="project-card__header">
-              <h3 class="project-card__title">
-                {{ project.title }}
-              </h3>
-              <svg
-                class="project-card__icon"
-                xmlns="http://www.w3.org/2000/svg"
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <path d="M5 12h14" />
-                <path d="m12 5 7 7-7 7" />
-              </svg>
-            </div>
-
-            <p class="project-card__description">
-              {{ project.description }}
-            </p>
-
-            <div class="project-card__tags">
-              <span
-                v-for="tag in project.tags"
-                :key="tag"
-                class="project-card__tag"
-              >
-                {{ tag }}
-              </span>
-            </div>
-          </div>
-        </NuxtLink>
+          :project="project"
+        />
       </div>
     </div>
   </section>
@@ -88,7 +69,8 @@ const { data: projects } = await useFetch<FeaturedProject[]>('/api/projects/feat
 
 .projects__header {
   display: flex;
-  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-between;
   gap: var(--space-4, 1rem);
   margin-bottom: var(--space-12, 3rem);
 }
@@ -107,7 +89,27 @@ const { data: projects } = await useFetch<FeaturedProject[]>('/api/projects/feat
 .projects__subtitle {
   color: var(--muted-foreground);
   max-width: 42rem;
-  margin: 0;
+  margin: var(--space-4, 1rem) 0 0;
+}
+
+.projects__view-all {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2, 0.5rem);
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--muted-foreground);
+  white-space: nowrap;
+  padding: var(--space-2, 0.5rem) var(--space-4, 1rem);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  transition: color 0.2s ease, border-color 0.2s ease;
+  margin-top: var(--space-2, 0.5rem);
+}
+
+.projects__view-all:hover {
+  color: var(--accent);
+  border-color: color-mix(in srgb, var(--accent), transparent 50%);
 }
 
 .projects__grid {
@@ -128,73 +130,9 @@ const { data: projects } = await useFetch<FeaturedProject[]>('/api/projects/feat
   }
 }
 
-.project-card {
-  display: block;
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: var(--space-6, 1.5rem);
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
-}
-
-.project-card:hover {
-  border-color: color-mix(in srgb, var(--accent), transparent 50%);
-  box-shadow: 0 10px 40px -10px color-mix(in srgb, var(--accent), transparent 90%);
-}
-
-.project-card__content {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-4, 1rem);
-}
-
-.project-card__header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: var(--space-4, 1rem);
-}
-
-.project-card__title {
-  font-size: 1.125rem;
-  font-weight: var(--font-weight-semibold, 600);
-  margin: 0;
-  transition: color 0.2s ease;
-}
-
-.project-card:hover .project-card__title {
-  color: var(--accent);
-}
-
-.project-card__icon {
-  flex-shrink: 0;
-  color: var(--muted-foreground);
-  transition: color 0.2s ease;
-}
-
-.project-card:hover .project-card__icon {
-  color: var(--accent);
-}
-
-.project-card__description {
-  font-size: var(--text-sm);
-  color: var(--muted-foreground);
-  line-height: 1.6;
-  margin: 0;
-}
-
-.project-card__tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2, 0.5rem);
-}
-
-.project-card__tag {
-  font-size: var(--text-xs, 0.75rem);
-  font-family: var(--font-mono, monospace);
-  padding: var(--space-1, 0.25rem) var(--space-2, 0.5rem);
-  background: var(--secondary);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm, 0.25rem);
+@media (max-width: 640px) {
+  .projects__header {
+    flex-direction: column;
+  }
 }
 </style>

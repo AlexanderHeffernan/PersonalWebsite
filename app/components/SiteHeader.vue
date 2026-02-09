@@ -9,10 +9,8 @@ const isLight = ref(false);
         Alexander Heffernan
       </NuxtLink>
       <nav class="site-header__nav" aria-label="Primary">
-        <NuxtLink to="/#projects">Projects</NuxtLink>
-        <NuxtLink to="/#about">About</NuxtLink>
-        <NuxtLink to="/#writing">Blog</NuxtLink>
-        <NuxtLink to="/#contact">Contact</NuxtLink>
+        <NuxtLink to="/" exact-active-class="nav-link--active">Home</NuxtLink>
+        <NuxtLink to="/projects" active-class="nav-link--active">Projects</NuxtLink>
       </nav>
     </div>
   </header>
@@ -47,6 +45,20 @@ const isLight = ref(false);
   font-size: var(--text-sm);
   text-transform: uppercase;
   letter-spacing: 0.08em;
+}
+
+.site-header__nav a {
+  color: var(--foreground);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.site-header__nav a:hover {
+  color: var(--accent);
+}
+
+.nav-link--active {
+  color: var(--accent) !important;
 }
 
 .site-header__toggle {

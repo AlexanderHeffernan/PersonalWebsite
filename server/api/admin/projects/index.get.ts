@@ -6,12 +6,13 @@ interface ProjectRow {
   title: string
   description: string
   featured_order: number | null
+  published: number
   created_at: string
 }
 
 export default defineEventHandler(() => {
   const rows = db.prepare(`
-    SELECT id, slug, title, description, featured_order, created_at
+    SELECT id, slug, title, description, featured_order, published, created_at
     FROM projects
     ORDER BY created_at DESC
   `).all() as ProjectRow[]
@@ -22,6 +23,7 @@ export default defineEventHandler(() => {
     title: row.title,
     description: row.description,
     featuredOrder: row.featured_order,
+    published: row.published,
     createdAt: row.created_at,
   }))
 })
