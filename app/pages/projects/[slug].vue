@@ -156,10 +156,15 @@ const contentHtml = computed(() => {
 </template>
 
 <style scoped>
+.project-page {
+  overflow-x: hidden;
+}
+
 .project-page__container {
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 var(--space-6);
+  min-width: 0;
 }
 
 .project-page__nav {
@@ -269,6 +274,7 @@ const contentHtml = computed(() => {
   display: flex;
   flex-direction: column;
   gap: var(--space-12);
+  min-width: 0;
 }
 
 .project-page__header {
@@ -448,6 +454,7 @@ const contentHtml = computed(() => {
 /* Sidebar */
 .project-page__sidebar {
   order: -1;
+  min-width: 0;
 }
 
 @media (min-width: 1024px) {
