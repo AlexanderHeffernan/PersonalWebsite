@@ -45,7 +45,7 @@ const handleSubmit = async () => {
 </script>
 
 <template>
-  <section id="contact" class="contact">
+  <section id="contact" class="contact grid-pattern">
     <div class="contact__container">
       <div class="contact__grid">
         <!-- Contact Info -->
@@ -173,7 +173,6 @@ const handleSubmit = async () => {
 .contact {
   padding: var(--space-24, 6rem) var(--space-4, 1rem);
   border-top: 1px solid var(--border);
-  background-color: var(--muted);
 }
 
 .contact__container {

@@ -78,6 +78,7 @@ const { data: projects } = await useFetch<FeaturedProject[]>('/api/projects/feat
 .projects {
   padding: var(--space-24, 6rem) var(--space-6);
   border-top: 1px solid var(--border);
+  background-color: var(--muted);
 }
 
 .projects__container {

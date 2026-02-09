@@ -14,7 +14,7 @@ const { data: educationList } = await useFetch<Education[]>('/api/education')
 </script>
 
 <template>
-  <section id="education" class="education">
+  <section id="education" class="education grid-pattern">
     <div class="education__container">
       <!-- Section header -->
       <div class="education__header">
@@ -60,7 +60,6 @@ const { data: educationList } = await useFetch<Education[]>('/api/education')
 .education {
   padding: var(--space-24, 6rem) var(--space-6);
   border-top: 1px solid var(--border);
-  background: var(--muted, #f8f8f8);
 }
 
 .education__container {

@@ -92,6 +92,7 @@ function toggleExpanded(id: number) {
 .experience {
   padding: var(--space-24, 6rem) var(--space-6);
   border-top: 1px solid var(--border);
+  background-color: var(--muted);
 }
 
 .experience__container {

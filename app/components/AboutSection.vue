@@ -12,7 +12,7 @@ const expanded = ref(false)
 </script>
 
 <template>
-  <section id="about" class="about">
+  <section id="about" class="about grid-pattern">
     <div class="about__container">
       <div class="about__grid">
         <!-- Bio -->
@@ -70,7 +70,6 @@ const expanded = ref(false)
 .about {
   padding: var(--space-24, 6rem) var(--space-6);
   border-top: 1px solid var(--border);
-  background-color: var(--muted);
 }
 
 .about__container {
