@@ -73,6 +73,26 @@ function onTouchEnd(e: TouchEvent) {
 const contentHtml = computed(() => {
   return renderMarkdown(project.value?.content || '')
 })
+
+import ImageLightbox from '~/components/ImageLightbox.vue'
+
+const showLightbox = ref(false)
+const lightboxIndex = ref(0)
+
+function openLightbox(index: number) {
+  // Only allow lightbox on sufficiently large screens (desktop)
+  if (typeof window !== 'undefined') {
+    const isDesktop = window.innerWidth >= 1024
+    if (!isDesktop) return
+  }
+
+  lightboxIndex.value = index
+  showLightbox.value = true
+}
+
+watch(lightboxIndex, (v) => {
+  selectedImage.value = v
+})
 </script>
 
 <template>
@@ -97,26 +117,29 @@ const contentHtml = computed(() => {
       <div class="project-page__grid">
         <!-- Image Gallery -->
         <div v-if="project.images.length > 0" class="gallery">
-          <div class="gallery__main" @touchstart="onTouchStart" @touchend="onTouchEnd">
-            <Transition :name="`slide-${slideDirection}`" mode="out-in">
-              <img
-                :key="selectedImage"
-                :src="project.images[selectedImage]?.url"
-                :alt="project.images[selectedImage]?.alt || `${project.title} screenshot`"
-              />
-            </Transition>
-            <template v-if="project.images.length > 1">
-              <button class="gallery__chevron gallery__chevron--left" aria-label="Previous image" @click="prevImage">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="m15 18-6-6 6-6"/>
-                </svg>
-              </button>
-              <button class="gallery__chevron gallery__chevron--right" aria-label="Next image" @click="nextImage">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="m9 18 6-6-6-6"/>
-                </svg>
-              </button>
-            </template>
+          <div class="gallery__main">
+            <div class="gallery__figure" @touchstart="onTouchStart" @touchend="onTouchEnd">
+              <Transition :name="`slide-${slideDirection}`" mode="out-in">
+                <img
+                  :key="selectedImage"
+                  :src="project.images[selectedImage]?.url"
+                  :alt="project.images[selectedImage]?.alt || `${project.title} screenshot`"
+                  @click="openLightbox(selectedImage)"
+                />
+              </Transition>
+              <template v-if="project.images.length > 1">
+                <button class="gallery__chevron gallery__chevron--left" aria-label="Previous image" @click="prevImage">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="m15 18-6-6 6-6"/>
+                  </svg>
+                </button>
+                <button class="gallery__chevron gallery__chevron--right" aria-label="Next image" @click="nextImage">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="m9 18 6-6-6-6"/>
+                  </svg>
+                </button>
+              </template>
+            </div>
           </div>
           <div v-if="project.images.length > 1" class="gallery__thumbs">
             <button
@@ -198,6 +221,13 @@ const contentHtml = computed(() => {
         </div>
       </div>
     </div>
+    <ImageLightbox
+      :images="project.images"
+      v-model:show="showLightbox"
+      :start-index="lightboxIndex"
+      @update:index="selectedImage = $event"
+      @close="showLightbox = false"
+    />
   </div>
 </template>
 
@@ -243,14 +273,29 @@ const contentHtml = computed(() => {
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.gallery__figure {
+  position: relative;
+  display: inline-block;
+  max-width: 100%;
+  height: 100%;
 }
 
 .gallery__main img {
-  width: 100%;
+  width: auto;
+  max-width: 100%;
   height: 100%;
   max-height: 480px;
   object-fit: contain;
   background: var(--secondary);
+}
+
+@media (min-width: 1024px) {
+  .gallery__main img { cursor: pointer; }
 }
 
 .gallery__chevron {
@@ -278,7 +323,7 @@ const contentHtml = computed(() => {
   }
 }
 
-.gallery__main:hover .gallery__chevron {
+.gallery__figure:hover .gallery__chevron {
   opacity: 1;
 }
 
