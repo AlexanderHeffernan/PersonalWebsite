@@ -390,6 +390,8 @@ const contentHtml = computed(() => {
   max-width: 72ch;
   color: var(--muted-foreground);
   line-height: 1.7;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 .prose :deep(h2) {
