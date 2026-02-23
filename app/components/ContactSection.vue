@@ -7,6 +7,9 @@ const formData = ref({
   message: '',
 })
 
+const sectionRef = ref<HTMLElement | null>(null)
+useScrollReveal(sectionRef, { children: '.contact__info, .contact__form-wrapper', stagger: 0.2 })
+
 const isSubmitting = ref(false)
 const submitStatus = ref<'idle' | 'success' | 'error'>('idle')
 const errorMessage = ref('')
@@ -47,7 +50,7 @@ const handleSubmit = async () => {
 <template>
   <section id="contact" class="contact grid-pattern">
     <div class="contact__container">
-      <div class="contact__grid">
+      <div ref="sectionRef" class="contact__grid">
         <!-- Contact Info -->
         <div class="contact__info">
           <div class="contact__header">

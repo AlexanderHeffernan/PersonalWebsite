@@ -9,12 +9,18 @@ interface AboutContent {
 const { data: about } = await useFetch<AboutContent>('/api/about')
 
 const expanded = ref(false)
+
+const sectionRef = ref<HTMLElement | null>(null)
+const listRef = ref<HTMLElement | null>(null)
+
+useScrollReveal(sectionRef, { children: '.about__bio, .about__highlights', stagger: 0.15 })
+useScrollReveal(listRef, { children: '.about__item', stagger: 0.1, y: 20 })
 </script>
 
 <template>
   <section id="about" class="about grid-pattern">
     <div class="about__container">
-      <div class="about__grid">
+      <div ref="sectionRef" class="about__grid">
         <!-- Bio -->
         <div class="about__bio">
           <h2 class="about__title">
@@ -52,7 +58,7 @@ const expanded = ref(false)
         <!-- Highlights -->
         <div class="about__highlights">
           <h3 class="about__subtitle">What I Focus On</h3>
-          <ul class="about__list">
+          <ul ref="listRef" class="about__list">
             <li v-for="(highlight, index) in about?.highlights" :key="index" class="about__item">
               <svg class="about__check" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/>

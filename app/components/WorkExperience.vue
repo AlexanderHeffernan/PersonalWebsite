@@ -21,13 +21,59 @@ function toggleExpanded(id: number) {
   }
   expandedIds.value = new Set(expandedIds.value)
 }
+
+const headerRef = ref<HTMLElement | null>(null)
+const timelineRef = ref<HTMLElement | null>(null)
+
+useScrollReveal(headerRef)
+
+onMounted(() => {
+  if (!timelineRef.value || prefersReducedMotion()) return
+
+  const dots = timelineRef.value.querySelectorAll('.experience__dot')
+  const contents = timelineRef.value.querySelectorAll('.experience__content')
+
+  gsap.set(dots, { scale: 0, transformOrigin: 'center center' })
+  gsap.set(contents, { opacity: 0, x: -20 })
+
+  gsap.to(dots, {
+    scale: 1,
+    duration: 0.6,
+    ease: 'elastic.out(1, 0.5)',
+    stagger: 0.15,
+    scrollTrigger: {
+      trigger: timelineRef.value,
+      start: 'top 80%',
+      once: true,
+    },
+  })
+
+  gsap.to(contents, {
+    opacity: 1,
+    x: 0,
+    duration: 0.6,
+    ease: 'power3.out',
+    stagger: 0.15,
+    scrollTrigger: {
+      trigger: timelineRef.value,
+      start: 'top 80%',
+      once: true,
+    },
+  })
+})
+
+onBeforeUnmount(() => {
+  ScrollTrigger.getAll().forEach((t) => {
+    if (t.trigger === timelineRef.value) t.kill()
+  })
+})
 </script>
 
 <template>
   <section id="experience" class="experience">
     <div class="experience__container">
       <!-- Section header -->
-      <div class="experience__header">
+      <div ref="headerRef" class="experience__header">
         <h2 class="experience__title">
           Work <span>Experience</span>
         </h2>
@@ -37,7 +83,7 @@ function toggleExpanded(id: number) {
       </div>
 
       <!-- Experience timeline -->
-      <div class="experience__timeline">
+      <div ref="timelineRef" class="experience__timeline">
         <div v-for="exp in experiences" :key="exp.id" class="experience__item">
           <!-- Timeline dot -->
           <div class="experience__dot" />

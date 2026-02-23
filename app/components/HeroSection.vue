@@ -17,8 +17,10 @@ interface GitHubActivity {
 const { data: activity } = await useFetch<GitHubActivity>('/api/github/activity')
 
 const mediaRef = ref<HTMLElement | null>(null)
+const heroRef = ref<HTMLElement | null>(null)
 
 let rafId: number | null = null
+let tl: gsap.core.Timeline | null = null
 let targetX = 0
 let targetY = 0
 let currentX = 0
@@ -75,6 +77,64 @@ onMounted(() => {
   el.addEventListener('pointerenter', handleEnter)
   el.addEventListener('pointerleave', handleLeave)
   rafId = requestAnimationFrame(animate)
+  if (!prefersReducedMotion() && heroRef.value) {
+    const ctx = heroRef.value
+
+    // Prepare title for word-level stagger: wrap words in spans
+    const titleEl = ctx.querySelector('.hero__title') as HTMLElement | null
+    if (titleEl) {
+      const accentText = titleEl.querySelector('span')?.textContent?.trim() || null
+      const words = titleEl.innerText.trim().split(/(\s+)/)
+      titleEl.innerHTML = words
+        .map((w) => {
+          if (w.match(/\s+/)) return w
+          if (accentText && w.replace(/\W/g, '') === accentText.replace(/\W/g, '')) {
+            // preserve the original accent span inside the word wrapper so CSS still applies
+            return `<span class="hero__title-word"><span>${w}</span></span>`
+          }
+          return `<span class="hero__title-word">${w}</span>`
+        })
+        .join('')
+    }
+
+    // initial states
+    gsap.set(ctx.querySelectorAll('.hero__eyebrow'), { opacity: 0, y: -12 })
+    gsap.set(ctx.querySelectorAll('.hero__title-word'), { opacity: 0, y: 60, rotationX: 8, transformOrigin: '0% 50%' })
+    gsap.set(ctx.querySelectorAll('.hero__title span'), { scale: 0.92, color: 'var(--accent)' })
+    gsap.set(ctx.querySelectorAll('.hero__subtitle'), { opacity: 0, y: 18 })
+    gsap.set(ctx.querySelectorAll('.hero__actions .btn'), { opacity: 0, y: 18, scale: 0.98 })
+    gsap.set(ctx.querySelectorAll('.hero__meta'), { opacity: 0, y: 10 })
+    gsap.set(ctx.querySelectorAll('.hero__media'), { opacity: 0, scale: 0.98 })
+    gsap.set(ctx.querySelectorAll('.hero__glow'), { opacity: 0, scale: 0.8 })
+
+    // Bold, cinematic timeline
+    tl = gsap.timeline({ defaults: { ease: 'power3.out' } })
+
+    // backdrop glow entrance
+    tl.to(ctx.querySelectorAll('.hero__glow'), { opacity: 1, scale: 1.15, duration: 1.2 }, 0)
+
+    // media (headshot) pops in with slight overshoot
+    tl.to(ctx.querySelectorAll('.hero__media'), { opacity: 1, scale: 1, duration: 0.9, ease: 'back.out(1.2)' }, 0.05)
+
+    // eyebrow slide-in
+    tl.to(ctx.querySelectorAll('.hero__eyebrow'), { opacity: 1, y: 0, duration: 0.45 }, 0.12)
+
+    // title word stagger: dramatic rise + subtle rotation
+    tl.to(ctx.querySelectorAll('.hero__title-word'), { opacity: 1, y: 0, rotationX: 0, duration: 0.8, stagger: 0.05 }, 0.25)
+
+    // accent word pulse
+    tl.to(ctx.querySelectorAll('.hero__title span'), { scale: 1, duration: 0.5, ease: 'elastic.out(1,0.6)' }, 0.9)
+
+    // subtitle and actions
+    tl.to(ctx.querySelectorAll('.hero__subtitle'), { opacity: 1, y: 0, duration: 0.5 }, 1.05)
+    tl.to(ctx.querySelectorAll('.hero__actions .btn'), { opacity: 1, y: 0, scale: 1, duration: 0.45, stagger: 0.08 }, 1.2)
+
+    // meta line
+    tl.to(ctx.querySelectorAll('.hero__meta'), { opacity: 1, y: 0, duration: 0.45 }, 1.5)
+
+    // gentle glow breathing loop (keeps subtle motion after entrance)
+    gsap.to(ctx.querySelectorAll('.hero__glow'), { scale: 1.05, duration: 6, yoyo: true, repeat: -1, ease: 'sine.inOut', delay: 1.6 })
+  }
 })
 
 onBeforeUnmount(() => {
@@ -84,11 +144,15 @@ onBeforeUnmount(() => {
   el.removeEventListener('pointerenter', handleEnter)
   el.removeEventListener('pointerleave', handleLeave)
   if (rafId) cancelAnimationFrame(rafId)
+  if (tl) {
+    tl.kill()
+    tl = null
+  }
 })
 </script>
 
 <template>
-  <section id="hero" class="hero grid-pattern">
+  <section id="hero" ref="heroRef" class="hero grid-pattern">
     <div class="hero__container">
       <div class="hero__grid">
         <div class="hero__content">

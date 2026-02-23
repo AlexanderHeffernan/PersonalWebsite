@@ -11,12 +11,47 @@ interface FeaturedProject {
 }
 
 const { data: projects } = await useFetch<FeaturedProject[]>('/api/projects/featured')
+
+const headerRef = ref<HTMLElement | null>(null)
+const gridRef = ref<HTMLElement | null>(null)
+
+useScrollReveal(headerRef)
+
+let gridCtx: gsap.Context | null = null
+
+onMounted(() => {
+  if (!gridRef.value || prefersReducedMotion()) return
+
+  gridCtx = gsap.context(() => {
+    const cards = gridRef.value!.children
+
+    gsap.set(cards, { opacity: 0, y: 40, scale: 0.95 })
+
+    gsap.to(cards, {
+      opacity: 1,
+      y: 0,
+      scale: 1,
+      duration: 0.6,
+      stagger: 0.12,
+      ease: 'back.out(1.7)',
+      scrollTrigger: {
+        trigger: gridRef.value,
+        start: 'top 85%',
+        once: true,
+      },
+    })
+  }, gridRef.value)
+})
+
+onBeforeUnmount(() => {
+  gridCtx?.revert()
+})
 </script>
 
 <template>
   <section id="projects" class="projects">
     <div class="projects__container">
-      <div class="projects__header">
+      <div ref="headerRef" class="projects__header">
         <div>
           <h2 class="projects__title">
             Featured <span>Projects</span>
@@ -44,7 +79,7 @@ const { data: projects } = await useFetch<FeaturedProject[]>('/api/projects/feat
         </NuxtLink>
       </div>
 
-      <div class="projects__grid">
+      <div ref="gridRef" class="projects__grid">
         <ProjectCard
           v-for="project in projects"
           :key="project.id"

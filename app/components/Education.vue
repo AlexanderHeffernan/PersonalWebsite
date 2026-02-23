@@ -11,13 +11,19 @@ interface Education {
 }
 
 const { data: educationList } = await useFetch<Education[]>('/api/education')
+
+const headerRef = ref<HTMLElement | null>(null)
+const gridRef = ref<HTMLElement | null>(null)
+
+useScrollReveal(headerRef)
+useScrollReveal(gridRef, { children: '.education__card', stagger: 0.1, y: 30 })
 </script>
 
 <template>
   <section id="education" class="education grid-pattern">
     <div class="education__container">
       <!-- Section header -->
-      <div class="education__header">
+      <div ref="headerRef" class="education__header">
         <h2 class="education__title">
           Formal <span>Education</span>
         </h2>
@@ -27,7 +33,7 @@ const { data: educationList } = await useFetch<Education[]>('/api/education')
       </div>
 
       <!-- Education grid -->
-      <div class="education__grid">
+      <div ref="gridRef" class="education__grid">
         <div v-for="edu in educationList" :key="edu.id" class="education__card">
           <div class="education__content">
             <div class="education__info">

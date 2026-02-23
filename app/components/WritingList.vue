@@ -10,6 +10,9 @@ interface WritingPost {
 
 const { data: posts } = await useFetch<WritingPost[]>('/api/writing')
 
+const sectionRef = ref<HTMLElement | null>(null)
+useScrollReveal(sectionRef, { children: '.writing__header, .writing__card', y: 30, stagger: 0.1 })
+
 const formatDate = (dateStr: string) => {
   return new Date(dateStr).toLocaleDateString('en-US', {
     month: 'short',
@@ -20,7 +23,7 @@ const formatDate = (dateStr: string) => {
 </script>
 
 <template>
-  <section id="writing" class="writing">
+  <section id="writing" ref="sectionRef" class="writing">
     <div class="writing__container">
       <!-- Section header -->
       <div class="writing__header">
