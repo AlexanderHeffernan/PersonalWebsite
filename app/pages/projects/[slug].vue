@@ -32,6 +32,16 @@ const { renderMarkdown } = useMarkdown()
 
 const selectedImage = ref(0)
 
+const imageCount = computed(() => project.value?.images.length ?? 0)
+
+function prevImage() {
+  selectedImage.value = (selectedImage.value - 1 + imageCount.value) % imageCount.value
+}
+
+function nextImage() {
+  selectedImage.value = (selectedImage.value + 1) % imageCount.value
+}
+
 const contentHtml = computed(() => {
   return renderMarkdown(project.value?.content || '')
 })
@@ -58,6 +68,18 @@ const contentHtml = computed(() => {
               :src="project.images[selectedImage]?.url"
               :alt="project.images[selectedImage]?.alt || `${project.title} screenshot`"
             />
+            <template v-if="project.images.length > 1">
+              <button class="gallery__chevron gallery__chevron--left" aria-label="Previous image" @click="prevImage">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="m15 18-6-6 6-6"/>
+                </svg>
+              </button>
+              <button class="gallery__chevron gallery__chevron--right" aria-label="Next image" @click="nextImage">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="m9 18 6-6-6-6"/>
+                </svg>
+              </button>
+            </template>
           </div>
           <div v-if="project.images.length > 1" class="gallery__thumbs">
             <button
@@ -212,6 +234,41 @@ const contentHtml = computed(() => {
   max-height: 480px;
   object-fit: contain;
   background: var(--secondary);
+}
+
+.gallery__chevron {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--background), transparent 20%);
+  color: var(--foreground);
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.2s ease, background 0.2s ease;
+  z-index: 2;
+}
+
+.gallery__main:hover .gallery__chevron {
+  opacity: 1;
+}
+
+.gallery__chevron:hover {
+  background: var(--background);
+}
+
+.gallery__chevron--left {
+  left: var(--space-3);
+}
+
+.gallery__chevron--right {
+  right: var(--space-3);
 }
 
 .gallery__thumbs {
