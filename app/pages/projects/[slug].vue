@@ -285,6 +285,24 @@ watch(lightboxIndex, (v) => {
   margin: 0 auto;
 }
 
+.gallery__figure {
+  display: block;
+  width: 100%;
+  text-align: center;
+}
+
+@media (max-width: 1023px) {
+  /* Ensure carousel images scale to viewport on mobile to avoid horizontal overflow */
+  .gallery__main img {
+    width: 100%;
+    height: auto;
+    max-height: none;
+  }
+
+  /* Prevent page horizontal overflow from gallery */
+  .gallery { overflow-x: hidden; }
+}
+
 @media (min-width: 1024px) {
   .gallery__main img { cursor: pointer; }
 }
