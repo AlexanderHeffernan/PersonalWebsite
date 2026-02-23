@@ -42,6 +42,26 @@ function nextImage() {
   selectedImage.value = (selectedImage.value + 1) % imageCount.value
 }
 
+let touchStartX = 0
+let touchEndX = 0
+const swipeThreshold = 50
+
+function onTouchStart(e: TouchEvent) {
+  const touch = e.changedTouches[0]
+  if (touch) touchStartX = touch.clientX
+}
+
+function onTouchEnd(e: TouchEvent) {
+  const touch = e.changedTouches[0]
+  if (!touch) return
+  touchEndX = touch.clientX
+  const diff = touchStartX - touchEndX
+  if (Math.abs(diff) >= swipeThreshold) {
+    if (diff > 0) nextImage()
+    else prevImage()
+  }
+}
+
 const contentHtml = computed(() => {
   return renderMarkdown(project.value?.content || '')
 })
@@ -63,7 +83,7 @@ const contentHtml = computed(() => {
     <section v-if="project.images.length > 0" class="project-page__gallery">
       <div class="project-page__container">
         <div class="gallery">
-          <div class="gallery__main">
+          <div class="gallery__main" @touchstart="onTouchStart" @touchend="onTouchEnd">
             <img
               :src="project.images[selectedImage]?.url"
               :alt="project.images[selectedImage]?.alt || `${project.title} screenshot`"
@@ -240,7 +260,7 @@ const contentHtml = computed(() => {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  display: flex;
+  display: none;
   align-items: center;
   justify-content: center;
   width: 36px;
@@ -253,6 +273,12 @@ const contentHtml = computed(() => {
   opacity: 0;
   transition: opacity 0.2s ease, background 0.2s ease;
   z-index: 2;
+}
+
+@media (min-width: 1024px) {
+  .gallery__chevron {
+    display: flex;
+  }
 }
 
 .gallery__main:hover .gallery__chevron {
