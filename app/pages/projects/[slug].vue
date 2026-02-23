@@ -87,10 +87,16 @@ const contentHtml = computed(() => {
       </NuxtLink>
     </div>
 
-    <!-- Image Gallery -->
-    <section v-if="project.images.length > 0" class="project-page__gallery">
-      <div class="project-page__container">
-        <div class="gallery">
+    <!-- Title -->
+    <div class="project-page__container">
+      <h1 class="project-page__title">{{ project.title }}</h1>
+    </div>
+
+    <!-- Main body grid: content + sticky sidebar -->
+    <div class="project-page__container">
+      <div class="project-page__grid">
+        <!-- Image Gallery -->
+        <div v-if="project.images.length > 0" class="gallery">
           <div class="gallery__main" @touchstart="onTouchStart" @touchend="onTouchEnd">
             <Transition :name="`slide-${slideDirection}`" mode="out-in">
               <img
@@ -123,96 +129,79 @@ const contentHtml = computed(() => {
             </button>
           </div>
         </div>
-      </div>
-    </section>
 
-    <!-- Project header & content -->
-    <section class="project-page__content">
-      <div class="project-page__container">
-        <div class="project-page__grid">
-          <!-- Main content -->
-          <div class="project-page__main">
-            <!-- Title & description -->
-            <div class="project-page__header">
-              <h1 class="project-page__title">{{ project.title }}</h1>
-              <p class="project-page__description">{{ project.description }}</p>
+        <!-- Sidebar -->
+        <aside class="project-page__sidebar">
+          <div class="sidebar">
+            <!-- Links -->
+            <div class="sidebar__section">
+              <h3 class="sidebar__title">Links</h3>
+              <div class="sidebar__links">
+                <a
+                  v-if="project.githubUrl"
+                  :href="project.githubUrl"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="link-card"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/>
+                    <path d="M9 18c-4.51 2-5-2-7-2"/>
+                  </svg>
+                  <div class="link-card__text">
+                    <span class="link-card__label">View on GitHub</span>
+                    <span class="link-card__sub">Source code</span>
+                  </div>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="link-card__arrow">
+                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
+                  </svg>
+                </a>
+                <a
+                  v-if="project.liveUrl"
+                  :href="project.liveUrl"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="link-card"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
+                  </svg>
+                  <div class="link-card__text">
+                    <span class="link-card__label">Live Demo</span>
+                    <span class="link-card__sub">Visit site</span>
+                  </div>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="link-card__arrow">
+                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
+                  </svg>
+                </a>
+              </div>
             </div>
 
-            <!-- Content sections -->
-            <ClientOnly>
-              <div v-if="project.content" class="prose" v-html="contentHtml" />
-            </ClientOnly>
+            <!-- Technologies -->
+            <div class="sidebar__section">
+              <h3 class="sidebar__title">Technologies</h3>
+              <div class="sidebar__tags">
+                <span v-for="tag in project.tags" :key="tag" class="sidebar__tag">
+                  {{ tag }}
+                </span>
+              </div>
+            </div>
           </div>
+        </aside>
 
-          <!-- Sidebar -->
-          <aside class="project-page__sidebar">
-            <div class="sidebar">
-              <!-- Links -->
-              <div class="sidebar__section">
-                <h3 class="sidebar__title">Links</h3>
-                <div class="sidebar__links">
-                  <a
-                    v-if="project.githubUrl"
-                    :href="project.githubUrl"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="link-card"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                      <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/>
-                      <path d="M9 18c-4.51 2-5-2-7-2"/>
-                    </svg>
-                    <div class="link-card__text">
-                      <span class="link-card__label">View on GitHub</span>
-                      <span class="link-card__sub">Source code</span>
-                    </div>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="link-card__arrow">
-                      <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
-                    </svg>
-                  </a>
-                  <a
-                    v-if="project.liveUrl"
-                    :href="project.liveUrl"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="link-card"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                      <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
-                    </svg>
-                    <div class="link-card__text">
-                      <span class="link-card__label">Live Demo</span>
-                      <span class="link-card__sub">Visit site</span>
-                    </div>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="link-card__arrow">
-                      <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
-                    </svg>
-                  </a>
-                </div>
-              </div>
-
-              <!-- Technologies -->
-              <div class="sidebar__section">
-                <h3 class="sidebar__title">Technologies</h3>
-                <div class="sidebar__tags">
-                  <span v-for="tag in project.tags" :key="tag" class="sidebar__tag">
-                    {{ tag }}
-                  </span>
-                </div>
-              </div>
-            </div>
-          </aside>
+        <!-- Content -->
+        <div class="project-page__content">
+          <p class="project-page__description">{{ project.description }}</p>
+          <ClientOnly>
+            <div v-if="project.content" class="prose" v-html="contentHtml" />
+          </ClientOnly>
         </div>
       </div>
-    </section>
+    </div>
   </div>
 </template>
 
 <style scoped>
-.project-page {
-  overflow-x: hidden;
-}
-
 .project-page__container {
   max-width: 1200px;
   margin: 0 auto;
@@ -240,9 +229,6 @@ const contentHtml = computed(() => {
 }
 
 /* Gallery */
-.project-page__gallery {
-  padding-bottom: var(--space-12);
-}
 
 .gallery {
   display: flex;
@@ -346,42 +332,45 @@ const contentHtml = computed(() => {
   object-fit: cover;
 }
 
-/* Content Grid */
-.project-page__content {
-  padding-bottom: var(--space-24);
-}
-
+/* Layout grid */
 .project-page__grid {
   display: grid;
   grid-template-columns: 1fr;
   gap: var(--space-12);
+  padding-bottom: var(--space-24);
 }
 
 @media (min-width: 1024px) {
   .project-page__grid {
-    grid-template-columns: 2fr 1fr;
+    grid-template-columns: 1fr 320px;
+  }
+
+  .gallery {
+    grid-column: 1;
+  }
+
+  .project-page__sidebar {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+  }
+
+  .project-page__content {
+    grid-column: 1;
   }
 }
 
-/* Main content */
-.project-page__main {
+.project-page__content {
   display: flex;
   flex-direction: column;
   gap: var(--space-12);
   min-width: 0;
 }
 
-.project-page__header {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-6);
-}
-
 .project-page__title {
   font-size: clamp(2rem, 4vw, 2.5rem);
   font-weight: var(--font-weight-bold);
   letter-spacing: -0.02em;
-  margin: 0;
+  margin: 0 0 var(--space-8);
   line-height: 1.1;
 }
 
@@ -390,6 +379,10 @@ const contentHtml = computed(() => {
   color: var(--muted-foreground);
   margin: 0;
   line-height: 1.6;
+  padding: var(--space-4) var(--space-6);
+  border-left: 3px solid var(--accent);
+  background: var(--secondary);
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
 }
 
 /* Prose */
@@ -547,19 +540,12 @@ const contentHtml = computed(() => {
 
 /* Sidebar */
 .project-page__sidebar {
-  order: -1;
   min-width: 0;
-}
-
-@media (min-width: 1024px) {
-  .project-page__sidebar {
-    order: 0;
-  }
 }
 
 .sidebar {
   position: sticky;
-  top: var(--space-24, 6rem);
+  top: 72px;
   display: flex;
   flex-direction: column;
   gap: var(--space-8);
