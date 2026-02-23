@@ -273,16 +273,6 @@ watch(lightboxIndex, (v) => {
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.gallery__figure {
-  position: relative;
-  display: inline-block;
-  max-width: 100%;
-  height: 100%;
 }
 
 .gallery__main img {
@@ -292,6 +282,7 @@ watch(lightboxIndex, (v) => {
   max-height: 480px;
   object-fit: contain;
   background: var(--secondary);
+  margin: 0 auto;
 }
 
 @media (min-width: 1024px) {
@@ -323,7 +314,7 @@ watch(lightboxIndex, (v) => {
   }
 }
 
-.gallery__figure:hover .gallery__chevron {
+.gallery__main:hover .gallery__chevron {
   opacity: 1;
 }
 
