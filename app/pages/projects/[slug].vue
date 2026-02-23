@@ -31,15 +31,23 @@ if (error.value) {
 const { renderMarkdown } = useMarkdown()
 
 const selectedImage = ref(0)
+const slideDirection = ref<'left' | 'right'>('left')
 
 const imageCount = computed(() => project.value?.images.length ?? 0)
 
 function prevImage() {
+  slideDirection.value = 'right'
   selectedImage.value = (selectedImage.value - 1 + imageCount.value) % imageCount.value
 }
 
 function nextImage() {
+  slideDirection.value = 'left'
   selectedImage.value = (selectedImage.value + 1) % imageCount.value
+}
+
+function selectImage(index: number) {
+  slideDirection.value = index > selectedImage.value ? 'left' : 'right'
+  selectedImage.value = index
 }
 
 let touchStartX = 0
@@ -84,10 +92,13 @@ const contentHtml = computed(() => {
       <div class="project-page__container">
         <div class="gallery">
           <div class="gallery__main" @touchstart="onTouchStart" @touchend="onTouchEnd">
-            <img
-              :src="project.images[selectedImage]?.url"
-              :alt="project.images[selectedImage]?.alt || `${project.title} screenshot`"
-            />
+            <Transition :name="`slide-${slideDirection}`" mode="out-in">
+              <img
+                :key="selectedImage"
+                :src="project.images[selectedImage]?.url"
+                :alt="project.images[selectedImage]?.alt || `${project.title} screenshot`"
+              />
+            </Transition>
             <template v-if="project.images.length > 1">
               <button class="gallery__chevron gallery__chevron--left" aria-label="Previous image" @click="prevImage">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -106,7 +117,7 @@ const contentHtml = computed(() => {
               v-for="(image, index) in project.images"
               :key="image.id"
               :class="['gallery__thumb', { 'gallery__thumb--active': selectedImage === index }]"
-              @click="selectedImage = index"
+              @click="selectImage(index)"
             >
               <img :src="image.url" :alt="image.alt || `Thumbnail ${index + 1}`" />
             </button>
@@ -640,5 +651,33 @@ const contentHtml = computed(() => {
   background: var(--secondary);
   border: 1px solid var(--border);
   border-radius: 999px;
+}
+
+/* Slide transitions */
+.slide-left-enter-active,
+.slide-left-leave-active,
+.slide-right-enter-active,
+.slide-right-leave-active {
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.slide-left-enter-from {
+  transform: translateX(30px);
+  opacity: 0;
+}
+
+.slide-left-leave-to {
+  transform: translateX(-30px);
+  opacity: 0;
+}
+
+.slide-right-enter-from {
+  transform: translateX(-30px);
+  opacity: 0;
+}
+
+.slide-right-leave-to {
+  transform: translateX(30px);
+  opacity: 0;
 }
 </style>
