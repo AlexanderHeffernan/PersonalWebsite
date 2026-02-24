@@ -55,6 +55,12 @@ export default defineEventHandler(() => {
   `).all() as WritingRow[]
 
   return [
+    {
+      loc: '/',
+      images: [
+        { loc: 'https://alexheffernan.dev/headshot.jpeg', title: 'Alexander Heffernan' },
+      ],
+    },
     ...projects.map(p => ({
       loc: `/projects/${p.slug}`,
       lastmod: toISODate(p.updated_at),
