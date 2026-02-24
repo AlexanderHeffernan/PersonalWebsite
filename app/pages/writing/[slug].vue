@@ -35,6 +35,38 @@ const formatDate = (dateStr: string) => {
 if (error.value?.statusCode === 404) {
   throw createError({ statusCode: 404, statusMessage: 'Post not found' })
 }
+
+const ogImage = computed(() => {
+  const hero = post.value?.heroImageUrl
+  if (hero && hero.startsWith('/')) return `https://alexheffernan.dev${hero}`
+  return hero || 'https://alexheffernan.dev/headshot.jpeg'
+})
+
+useSeoMeta({
+  title: () => post.value?.title || 'Article',
+  description: () => post.value?.excerpt || '',
+  ogTitle: () => `${post.value?.title || 'Article'} — Alexander Heffernan`,
+  ogDescription: () => post.value?.excerpt || '',
+  ogImage: ogImage,
+  ogUrl: () => `https://alexheffernan.dev/writing/${slug}`,
+  ogType: 'article',
+  twitterTitle: () => `${post.value?.title || 'Article'} — Alexander Heffernan`,
+  twitterDescription: () => post.value?.excerpt || '',
+  twitterImage: ogImage,
+})
+
+useSchemaOrg([
+  defineArticle({
+    headline: () => post.value?.title || '',
+    description: () => post.value?.excerpt || '',
+    image: ogImage.value,
+    datePublished: () => post.value?.date || '',
+    author: {
+      name: 'Alexander Heffernan',
+      url: 'https://alexheffernan.dev',
+    },
+  }),
+])
 </script>
 
 <template>

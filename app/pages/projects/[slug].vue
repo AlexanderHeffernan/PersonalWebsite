@@ -28,6 +28,31 @@ if (error.value) {
   throw createError({ statusCode: 404, message: 'Project not found' })
 }
 
+const ogImage = computed(() => {
+  const firstImage = project.value?.images?.[0]?.url
+  if (firstImage && firstImage.startsWith('/')) return `https://alexheffernan.dev${firstImage}`
+  return firstImage || 'https://alexheffernan.dev/headshot.jpeg'
+})
+
+useSeoMeta({
+  title: () => project.value?.title || 'Project',
+  description: () => project.value?.description || '',
+  ogTitle: () => `${project.value?.title || 'Project'} — Alexander Heffernan`,
+  ogDescription: () => project.value?.description || '',
+  ogImage: ogImage,
+  ogUrl: () => `https://alexheffernan.dev/projects/${slug}`,
+  twitterTitle: () => `${project.value?.title || 'Project'} — Alexander Heffernan`,
+  twitterDescription: () => project.value?.description || '',
+  twitterImage: ogImage,
+})
+
+useSchemaOrg([
+  defineWebPage({
+    name: () => project.value?.title || 'Project',
+    description: () => project.value?.description || '',
+  }),
+])
+
 const { renderMarkdown } = useMarkdown()
 
 const selectedImage = ref(0)
@@ -215,9 +240,7 @@ watch(lightboxIndex, (v) => {
         <!-- Content -->
         <div class="project-page__content">
           <p class="project-page__description">{{ project.description }}</p>
-          <ClientOnly>
-            <div v-if="project.content" class="prose" v-html="contentHtml" />
-          </ClientOnly>
+          <div v-if="project.content" class="prose" v-html="contentHtml" />
         </div>
       </div>
     </div>

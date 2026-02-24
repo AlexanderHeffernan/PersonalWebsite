@@ -1,2 +1,6 @@
 User-Agent: *
-Disallow:
+Disallow: /admin/
+Disallow: /api/
+Allow: /api/uploads/
+
+Sitemap: https://alexheffernan.dev/sitemap.xml

@@ -12,6 +12,15 @@ interface Project {
 
 const { data: projects } = await useFetch<Project[]>('/api/projects')
 
+useSeoMeta({
+  title: 'Projects',
+  description: 'Explore software engineering projects by Alexander Heffernan — AI, full-stack development, and quality-first engineering.',
+  ogTitle: 'Projects — Alexander Heffernan',
+  ogDescription: 'Software engineering projects featuring AI, full-stack development, and quality-first engineering.',
+  ogImage: 'https://alexheffernan.dev/headshot.jpeg',
+  ogUrl: 'https://alexheffernan.dev/projects',
+})
+
 const search = ref('')
 const activeTags = ref<Set<string>>(new Set())
 const filtersExpanded = ref(false)
