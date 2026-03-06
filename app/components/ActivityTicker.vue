@@ -104,11 +104,11 @@ const messages = computed(() => {
   
   // 5. Time of day message
   const timeMessages = {
-    morning: '🌅 MORNING MODE • FRESH START',
-    office: '☀️ OFFICE HOURS • PROBABLY DEBUGGING SOMETHING',
-    evening: '🌆 EVENING SESSION • IN THE FLOW',
-    night: '🌙 NIGHT OWL MODE • BEST CODE HAPPENS NOW',
-    sleep: '😴 OFFLINE • HUMANS NEED SLEEP TOO',
+    morning: '🌅 MORNING • GETTING STARTED',
+    office: '☀️ DAYTIME • UNI WORK & BUILDING',
+    evening: '🌆 EVENING • SIDE PROJECTS & OPEN AIR',
+    night: '🌙 NIGHT • CLOSING THE LAPTOP... MAYBE',
+    sleep: '😴 OFFLINE • BACK SOON',
   }
   msgs.push(timeMessages[activity.timeOfDay])
   

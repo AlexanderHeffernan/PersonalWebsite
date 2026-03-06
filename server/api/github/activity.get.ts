@@ -26,12 +26,12 @@ function getGitHubToken() {
 }
 
 function getTimeOfDay(): GitHubActivity['timeOfDay'] {
-  const hour = new Date().getHours()
-  if (hour >= 3 && hour < 9) return 'sleep'
-  if (hour >= 9 && hour < 12) return 'morning'
-  if (hour >= 12 && hour < 18) return 'office'
-  if (hour >= 18 && hour < 24) return 'evening'
-  return 'night'
+  const hour = Number(new Intl.DateTimeFormat('en-NZ', { timeZone: 'Pacific/Auckland', hour: '2-digit', hour12: false}).format(new Date()))
+  if (hour >= 6 && hour < 9) return 'morning'
+  if (hour >= 9 && hour < 16) return 'office'
+  if (hour >= 16 && hour < 19) return 'evening'
+  if (hour >= 19 && hour < 23) return 'night'
+  return 'sleep'
 }
 
 function formatTimeAgo(hoursAgo: number): string {
