@@ -22,6 +22,7 @@ export default defineEventHandler(() => {
     FROM projects p
     WHERE p.featured_order IS NOT NULL AND p.published = 1
     ORDER BY p.featured_order ASC
+    LIMIT 3
   `).all() as ProjectRow[]
 
   return rows.map(row => ({
