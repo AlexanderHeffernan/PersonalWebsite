@@ -6,9 +6,10 @@ interface WritingPost {
   excerpt: string
   date: string
   readTime: string
+  tags: string[]
 }
 
-const { data: posts } = await useFetch<WritingPost[]>('/api/writing')
+const { data: posts } = await useFetch<WritingPost[]>('/api/writing/featured')
 
 const sectionRef = ref<HTMLElement | null>(null)
 useScrollReveal(sectionRef, { children: '.writing__header, .writing__card', y: 30, stagger: 0.1 })
@@ -27,12 +28,31 @@ const formatDate = (dateStr: string) => {
     <div class="writing__container">
       <!-- Section header -->
       <div class="writing__header">
-        <h2 class="writing__title">
-          Writing & <span>Insights</span>
-        </h2>
-        <p class="writing__subtitle">
-          Thoughts on software engineering, AI, and building quality systems.
-        </p>
+        <div>
+          <h2 class="writing__title">
+            Writing & <span>Insights</span>
+          </h2>
+          <p class="writing__subtitle">
+            Thoughts on software engineering, AI, and building quality systems.
+          </p>
+        </div>
+        <NuxtLink to="/writing" class="writing__view-all">
+          View All
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M5 12h14" />
+            <path d="m12 5 7 7-7 7" />
+          </svg>
+        </NuxtLink>
       </div>
 
       <!-- Posts list -->
@@ -69,6 +89,16 @@ const formatDate = (dateStr: string) => {
               {{ post.excerpt }}
             </p>
 
+            <div v-if="post.tags?.length" class="writing__tags">
+              <span
+                v-for="tag in post.tags"
+                :key="tag"
+                class="writing__tag"
+              >
+                {{ tag }}
+              </span>
+            </div>
+
             <div class="writing__meta">
               <span class="writing__meta-item">
                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -99,7 +129,6 @@ const formatDate = (dateStr: string) => {
 }
 
 @media (min-width: 640px) {
-  .writing__header,
   .writing__list {
     max-width: 800px;
   }
@@ -107,7 +136,8 @@ const formatDate = (dateStr: string) => {
 
 .writing__header {
   display: flex;
-  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-between;
   gap: var(--space-4, 1rem);
   margin-bottom: var(--space-12, 3rem);
 }
@@ -126,7 +156,27 @@ const formatDate = (dateStr: string) => {
 .writing__subtitle {
   color: var(--muted-foreground);
   max-width: 42rem;
-  margin: 0;
+  margin: var(--space-4, 1rem) 0 0;
+}
+
+.writing__view-all {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2, 0.5rem);
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--muted-foreground);
+  white-space: nowrap;
+  padding: var(--space-2, 0.5rem) var(--space-4, 1rem);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  transition: color 0.2s ease, border-color 0.2s ease;
+  margin-top: var(--space-2, 0.5rem);
+}
+
+.writing__view-all:hover {
+  color: var(--accent);
+  border-color: color-mix(in srgb, var(--accent), transparent 50%);
 }
 
 .writing__list {
@@ -191,6 +241,21 @@ const formatDate = (dateStr: string) => {
   margin: 0;
 }
 
+.writing__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2, 0.5rem);
+}
+
+.writing__tag {
+  font-size: var(--text-xs, 0.75rem);
+  font-family: var(--font-mono, monospace);
+  padding: var(--space-1, 0.25rem) var(--space-2, 0.5rem);
+  background: var(--secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm, 0.25rem);
+}
+
 .writing__meta {
   display: flex;
   align-items: center;
@@ -209,5 +274,11 @@ const formatDate = (dateStr: string) => {
 
 .writing__meta-separator {
   opacity: 0.5;
+}
+
+@media (max-width: 640px) {
+  .writing__header {
+    flex-direction: column;
+  }
 }
 </style>

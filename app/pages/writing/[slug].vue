@@ -91,7 +91,7 @@ useSchemaOrg([
       <!-- Hero content -->
       <div class="writing-post__hero-content">
         <div class="writing-post__container">
-          <NuxtLink to="/#writing" class="writing-post__back">
+          <NuxtLink to="/writing" class="writing-post__back">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="m15 18-6-6 6-6"/>
             </svg>
@@ -141,7 +141,7 @@ useSchemaOrg([
 
         <!-- Footer navigation -->
         <div class="writing-post__footer">
-          <NuxtLink to="/#writing" class="writing-post__footer-link">
+          <NuxtLink to="/writing" class="writing-post__footer-link">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="m15 18-6-6 6-6"/>
             </svg>

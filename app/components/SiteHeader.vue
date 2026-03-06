@@ -11,6 +11,7 @@ const isLight = ref(false);
       <nav class="site-header__nav" aria-label="Primary">
         <NuxtLink to="/" exact-active-class="nav-link--active">Home</NuxtLink>
         <NuxtLink to="/projects" active-class="nav-link--active">Projects</NuxtLink>
+        <NuxtLink to="/writing" active-class="nav-link--active">Writing</NuxtLink>
       </nav>
     </div>
   </header>
