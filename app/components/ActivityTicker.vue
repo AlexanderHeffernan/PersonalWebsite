@@ -52,20 +52,20 @@ const messageParts = computed(() => {
 
 const messages = computed(() => {
   const { activity } = props
-  
-  // Fallback for inactive periods
-  if (!activity.isActive) {
-    if (activity.lastCommit && activity.lastCommit.hoursAgo < 168) { // 7 days
-      return ['🟡 BETWEEN SPRINTS • PLANNING THE NEXT BUILD']
-    }
-    return ['☕ ON BREAK • GREAT CODE NEEDS REST TOO']
-  }
 
   // Active messages
   const msgs = []
-  
+
   // 1. Activity status
-  msgs.push(`🟢 ACTIVE TODAY • ${activity.weekCommits} COMMIT${activity.weekCommits !== 1 ? 'S' : ''} THIS WEEK`)
+  if (!activity.isActive) {
+    if (activity.lastCommit && activity.lastCommit.hoursAgo < 168) {
+      msgs.push(`🟢 ACTIVE THIS WEEK • ${activity.weekCommits} COMMIT${activity.weekCommits !== 1 ? 'S' : ''} THIS WEEK`)
+    } else {
+      msgs.push(`☕ ON BREAK • NO COMMITS THIS WEEK`)
+    }
+  } else {
+    msgs.push(`🟢 ACTIVE TODAY • ${activity.weekCommits} COMMIT${activity.weekCommits !== 1 ? 'S' : ''} THIS WEEK`)
+  }
   
   // 2. Latest commit with dynamic time prefix
   if (activity.lastCommit) {
@@ -76,10 +76,8 @@ const messages = computed(() => {
     if (hours >= 24) {
       const days = Math.floor(hours / 24)
       prefix = `⚡ COMMITTED ${days}D AGO:`
-    } else if (hours >= 2) {
-      prefix = `⚡ COMMITTED ${Math.floor(hours)}H AGO:`
     } else if (hours >= 1) {
-      prefix = '⚡ COMMITTED 1H AGO:'
+      prefix = `⚡ COMMITTED ${Math.floor(hours)}H AGO:`
     }
     
     msgs.push(`${prefix} "${msg}"`)
