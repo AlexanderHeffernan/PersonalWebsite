@@ -18,9 +18,10 @@ interface GitHubActivity {
 
 const CACHE_TTL_MINUTES = 15
 const GITHUB_USERNAME = 'AlexanderHeffernan'
+const TIME_ZONE = 'Pacific/Auckland'
 
 function getTodayDateString(): string {
-  return new Date().toISOString().split('T')[0]!
+  return new Date().toLocaleDateString('en-CA', { timeZone: TIME_ZONE })
 }
 
 function getLatestStreakDay(): { date: string } | undefined {
@@ -142,16 +143,45 @@ function shiftDate(dateStr: string, days: number): string {
   return d.toISOString().split('T')[0]!
 }
 
-function pruneOldStreakDays(): void {
-  // Find the most recent completed day with 0 contributions (not today)
-  const today = getTodayDateString()
-  const breakDay: any = db.prepare(
-    'SELECT date FROM github_streak_days WHERE has_contributions = 0 AND date < ? ORDER BY date DESC LIMIT 1'
-  ).get(today)
+function getTimeZoneOffsetMinutes(date: Date, timeZone: string): number {
+  const parts = new Intl.DateTimeFormat('en-US', {
+    timeZone,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false,
+  }).formatToParts(date)
 
-  if (breakDay) {
-    db.prepare('DELETE FROM github_streak_days WHERE date < ?').run(breakDay.date)
+  const map = Object.fromEntries(parts.map((p) => [p.type, p.value]))
+  const asUTC = Date.UTC(
+    Number(map.year),
+    Number(map.month) - 1,
+    Number(map.day),
+    Number(map.hour),
+    Number(map.minute),
+    Number(map.second)
+  )
+
+  return (asUTC - date.getTime()) / 60000
+}
+
+function zonedStartOfDayISO(dateStr: string, timeZone: string): string {
+  const [year, month, day] = dateStr.split('-').map(Number)
+  // First pass offset at the naive UTC midnight
+  let utcDate = new Date(Date.UTC(year!, (month! - 1), day!, 0, 0, 0))
+  let offset = getTimeZoneOffsetMinutes(utcDate, timeZone)
+  let adjusted = new Date(Date.UTC(year!, (month! - 1), day!, 0, 0, 0) - offset * 60000)
+
+  // Second pass for DST boundary correctness
+  const offset2 = getTimeZoneOffsetMinutes(adjusted, timeZone)
+  if (offset2 !== offset) {
+    adjusted = new Date(Date.UTC(year!, (month! - 1), day!, 0, 0, 0) - offset2 * 60000)
   }
+
+  return adjusted.toISOString()
 }
 
 async function calculateStreak(token: string): Promise<number> {
@@ -163,21 +193,19 @@ async function calculateStreak(token: string): Promise<number> {
 
   // 2. Determine GraphQL fetch window
   const today = getTodayDateString()
-  const latestRow = getLatestStreakDay()
-  let fromDate: string
+  const toDate = new Date().toISOString()
 
-  if (latestRow) {
+  let fromDate: string
+  if (getLatestStreakDay()) {
     // Fetch from the day after our latest stored date (but always re-fetch today)
-    const dayAfterLatest = shiftDate(latestRow.date, 1)
+    const dayAfterLatest = shiftDate(getLatestStreakDay()!.date, 1)
     fromDate = dayAfterLatest <= today ? dayAfterLatest : today
   } else {
     // Bootstrap: fetch last 90 days
     fromDate = shiftDate(today, -90)
   }
 
-  // Always include today in the fetch (today's count can change)
-  const toDate = new Date().toISOString()
-  const fromISO = new Date(fromDate + 'T00:00:00Z').toISOString()
+  const fromISO = zonedStartOfDayISO(fromDate, TIME_ZONE)
 
   // 3. Fetch and upsert
   const days = await fetchContributionDays(fromISO, toDate, token)
@@ -188,10 +216,7 @@ async function calculateStreak(token: string): Promise<number> {
   // 4. Calculate streak from DB
   const streak = calculateStreakFromDb()
 
-  // 5. Prune old data
-  pruneOldStreakDays()
-
-  // 6. Cache the streak for today
+  // 5. Cache the streak for today
   db.prepare(
     'UPDATE github_activity_cache SET streak_days = ?, streak_calculated_date = ? WHERE id = 1'
   ).run(streak, today)
@@ -206,7 +231,7 @@ function getGitHubToken() {
 }
 
 function getTimeOfDay(): GitHubActivity['timeOfDay'] {
-  const hour = Number(new Intl.DateTimeFormat('en-NZ', { timeZone: 'Pacific/Auckland', hour: '2-digit', hour12: false}).format(new Date()))
+  const hour = Number(new Intl.DateTimeFormat('en-NZ', { timeZone: TIME_ZONE, hour: '2-digit', hour12: false}).format(new Date()))
   if (hour >= 6 && hour < 9) return 'morning'
   if (hour >= 9 && hour < 16) return 'office'
   if (hour >= 16 && hour < 19) return 'evening'
