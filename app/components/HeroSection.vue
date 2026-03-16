@@ -149,35 +149,53 @@ onMounted(() => {
         gsap.set(sweepLine, { opacity: 0, xPercent: -120 })
       }
 
+      const holdDuration = 3.6
+      const outDuration = 0.24
+      const gapDuration = 0.08
+      const inDuration = 0.28
+
+      const addSweepMotion = (label: string) => {
+        if (!sweepLine || !titleLoop) return
+        titleLoop
+          .set(sweepLine, { opacity: 0, xPercent: -18 }, label)
+          .to(sweepLine, { opacity: 0.55, xPercent: -8, duration: 0.24, ease: 'sine.out' }, label)
+          .to(sweepLine, { opacity: 0.88, xPercent: 82, duration: 0.2, ease: 'power2.out' }, `${label}+=0.08`)
+          .to(sweepLine, { opacity: 0.46, xPercent: 8, duration: 0.18, ease: 'power2.inOut' }, `${label}+=${outDuration + gapDuration}`)
+          .to(
+            sweepLine,
+            { opacity: 0, xPercent: -18, duration: 0.24, ease: 'sine.out' },
+            `${label}+=${outDuration + gapDuration + 0.1}`,
+          )
+      }
+
       titleLoop = gsap.timeline({ repeat: -1, repeatDelay: 0.2, delay: 1.8 })
 
       titleLoop
-        .to({}, { duration: 3.6 })
+        .to({}, { duration: holdDuration })
         .call(() => {
-          gsap.set(qualityPhrase, { opacity: 0, x: 0, filter: 'blur(1px)', clipPath: 'inset(0 100% 0 0)' })
+          gsap.set(qualityPhrase, { opacity: 0, x: 12, filter: 'blur(1px)', clipPath: 'inset(0 100% 0 0)' })
           gsap.set(namePhrase, { opacity: 1, x: 0, filter: 'blur(0px)', clipPath: 'inset(0 0% 0 0)' })
           gsap.set(qualityPhrase, { zIndex: 3 })
           gsap.set(namePhrase, { zIndex: 2 })
         })
-        .to(namePhrase, { opacity: 0, x: 4, filter: 'blur(1px)', duration: 0.3, ease: 'power2.inOut' }, 'swap-to-quality')
-        .to(qualityPhrase, { opacity: 1, x: 0, filter: 'blur(0px)', clipPath: 'inset(0 0% 0 0)', duration: 0.3, ease: 'power2.out' }, 'swap-to-quality')
-        .to(sweepLine, { opacity: 0.9, xPercent: 0, duration: 0.22, ease: 'power2.out' }, 'swap-to-quality')
-        .to(sweepLine, { opacity: 0, xPercent: 110, duration: 0.2, ease: 'power1.in' }, 'swap-to-quality+=0.18')
-        .set(namePhrase, { opacity: 0, x: 4, filter: 'blur(1px)', clipPath: 'inset(0 0% 0 100%)' }, 'swap-to-quality+=0.31')
-        .set(qualityPhrase, { opacity: 1, x: 0, filter: 'blur(0px)', clipPath: 'inset(0 0% 0 0)' }, 'swap-to-quality+=0.31')
-        .to({}, { duration: 3.6 })
+        .to(namePhrase, { opacity: 0, x: 10, filter: 'blur(1px)', duration: outDuration, ease: 'power2.inOut' }, 'swap-to-quality')
+        .set(namePhrase, { opacity: 0, x: 10, filter: 'blur(1px)', clipPath: 'inset(0 0% 0 100%)' }, `swap-to-quality+=${outDuration}`)
+        .to(qualityPhrase, { opacity: 1, x: 0, filter: 'blur(0px)', clipPath: 'inset(0 0% 0 0)', duration: inDuration, ease: 'power2.out' }, `swap-to-quality+=${outDuration + gapDuration}`)
+        .set(qualityPhrase, { opacity: 1, x: 0, filter: 'blur(0px)', clipPath: 'inset(0 0% 0 0)' }, `swap-to-quality+=${outDuration + gapDuration + inDuration + 0.01}`)
+        .to({}, { duration: holdDuration })
         .call(() => {
-          gsap.set(namePhrase, { opacity: 0, x: 0, filter: 'blur(1px)', clipPath: 'inset(0 100% 0 0)' })
+          gsap.set(namePhrase, { opacity: 0, x: 12, filter: 'blur(1px)', clipPath: 'inset(0 100% 0 0)' })
           gsap.set(qualityPhrase, { opacity: 1, x: 0, filter: 'blur(0px)', clipPath: 'inset(0 0% 0 0)' })
           gsap.set(namePhrase, { zIndex: 3 })
           gsap.set(qualityPhrase, { zIndex: 2 })
         })
-        .to(qualityPhrase, { opacity: 0, x: 4, filter: 'blur(1px)', duration: 0.3, ease: 'power2.inOut' }, 'swap-to-name')
-        .to(namePhrase, { opacity: 1, x: 0, filter: 'blur(0px)', clipPath: 'inset(0 0% 0 0)', duration: 0.3, ease: 'power2.out' }, 'swap-to-name')
-        .to(sweepLine, { opacity: 0.9, xPercent: 0, duration: 0.22, ease: 'power2.out' }, 'swap-to-name')
-        .to(sweepLine, { opacity: 0, xPercent: 110, duration: 0.2, ease: 'power1.in' }, 'swap-to-name+=0.18')
-        .set(qualityPhrase, { opacity: 0, x: 4, filter: 'blur(1px)', clipPath: 'inset(0 0% 0 100%)' }, 'swap-to-name+=0.31')
-        .set(namePhrase, { opacity: 1, x: 0, filter: 'blur(0px)', clipPath: 'inset(0 0% 0 0)' }, 'swap-to-name+=0.31')
+        .to(qualityPhrase, { opacity: 0, x: 10, filter: 'blur(1px)', duration: outDuration, ease: 'power2.inOut' }, 'swap-to-name')
+        .set(qualityPhrase, { opacity: 0, x: 10, filter: 'blur(1px)', clipPath: 'inset(0 0% 0 100%)' }, `swap-to-name+=${outDuration}`)
+        .to(namePhrase, { opacity: 1, x: 0, filter: 'blur(0px)', clipPath: 'inset(0 0% 0 0)', duration: inDuration, ease: 'power2.out' }, `swap-to-name+=${outDuration + gapDuration}`)
+        .set(namePhrase, { opacity: 1, x: 0, filter: 'blur(0px)', clipPath: 'inset(0 0% 0 0)' }, `swap-to-name+=${outDuration + gapDuration + inDuration + 0.01}`)
+
+      addSweepMotion('swap-to-quality')
+      addSweepMotion('swap-to-name')
 
       visibilityHandler = () => {
         if (!titleLoop) return
@@ -339,6 +357,16 @@ onBeforeUnmount(() => {
   gap: 0.04em;
   will-change: opacity, transform, filter, clip-path;
   overflow: hidden;
+}
+
+.hero__title-phrase--name {
+  opacity: 1;
+  clip-path: inset(0 0% 0 0);
+}
+
+.hero__title-phrase--quality {
+  opacity: 0;
+  clip-path: inset(0 100% 0 0);
 }
 
 .hero__title-sweep {
