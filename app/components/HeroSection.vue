@@ -342,7 +342,7 @@ onBeforeUnmount(() => {
 .hero__title {
   font-size: clamp(2.5rem, 4vw, 4rem);
   font-weight: var(--font-weight-bold);
-  line-height: 1.02;
+  line-height: 1.06;
   letter-spacing: -0.02em;
   margin: 0;
 }
@@ -350,9 +350,9 @@ onBeforeUnmount(() => {
 .hero__title-rotator {
   position: relative;
   display: grid;
-  min-height: 2.15em;
+  min-height: 2.3em;
   overflow: hidden;
-  padding-bottom: 0.14em;
+  padding-bottom: 0.28em;
 }
 
 .hero__title-phrase {
@@ -380,6 +380,7 @@ onBeforeUnmount(() => {
   height: 1px;
   width: 40%;
   margin-top: auto;
+  transform: translateY(0.08em);
   background: linear-gradient(90deg, transparent 0%, color-mix(in srgb, var(--accent), #fff 8%) 40%, transparent 100%);
   opacity: 0;
   pointer-events: none;
