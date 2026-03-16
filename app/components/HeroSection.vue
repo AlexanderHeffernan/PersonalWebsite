@@ -21,6 +21,8 @@ const heroRef = ref<HTMLElement | null>(null)
 
 let rafId: number | null = null
 let tl: gsap.core.Timeline | null = null
+let titleLoop: gsap.core.Timeline | null = null
+let visibilityHandler: (() => void) | null = null
 let targetX = 0
 let targetY = 0
 let currentX = 0
@@ -80,27 +82,20 @@ onMounted(() => {
   if (!prefersReducedMotion() && heroRef.value) {
     const ctx = heroRef.value
 
-    // Prepare title for word-level stagger: wrap words in spans
-    const titleEl = ctx.querySelector('.hero__title') as HTMLElement | null
-    if (titleEl) {
-      const accentText = titleEl.querySelector('span')?.textContent?.trim() || null
-      const words = titleEl.innerText.trim().split(/(\s+)/)
-      titleEl.innerHTML = words
-        .map((w) => {
-          if (w.match(/\s+/)) return w
-          if (accentText && w.replace(/\W/g, '') === accentText.replace(/\W/g, '')) {
-            // preserve the original accent span inside the word wrapper so CSS still applies
-            return `<span class="hero__title-word"><span>${w}</span></span>`
-          }
-          return `<span class="hero__title-word">${w}</span>`
-        })
-        .join('')
-    }
-
     // initial states
     gsap.set(ctx.querySelectorAll('.hero__eyebrow'), { opacity: 0, y: -12 })
-    gsap.set(ctx.querySelectorAll('.hero__title-word'), { opacity: 0, y: 60, rotationX: 8, transformOrigin: '0% 50%' })
-    gsap.set(ctx.querySelectorAll('.hero__title span'), { scale: 0.92, color: 'var(--accent)' })
+    gsap.set(ctx.querySelectorAll('.hero__title-phrase--name'), {
+      opacity: 0,
+      x: 0,
+      filter: 'blur(1px)',
+      clipPath: 'inset(0 100% 0 0)',
+    })
+    gsap.set(ctx.querySelectorAll('.hero__title-phrase--quality'), {
+      opacity: 0,
+      x: 0,
+      filter: 'blur(1px)',
+      clipPath: 'inset(0 100% 0 0)',
+    })
     gsap.set(ctx.querySelectorAll('.hero__subtitle'), { opacity: 0, y: 18 })
     gsap.set(ctx.querySelectorAll('.hero__actions .btn'), { opacity: 0, y: 18, scale: 0.98 })
     gsap.set(ctx.querySelectorAll('.hero__meta'), { opacity: 0, y: 10 })
@@ -119,11 +114,19 @@ onMounted(() => {
     // eyebrow slide-in
     tl.to(ctx.querySelectorAll('.hero__eyebrow'), { opacity: 1, y: 0, duration: 0.45 }, 0.12)
 
-    // title word stagger: dramatic rise + subtle rotation
-    tl.to(ctx.querySelectorAll('.hero__title-word'), { opacity: 1, y: 0, rotationX: 0, duration: 0.8, stagger: 0.05 }, 0.25)
-
-    // accent word pulse
-    tl.to(ctx.querySelectorAll('.hero__title span'), { scale: 1, duration: 0.5, ease: 'elastic.out(1,0.6)' }, 0.9)
+    // title entrance (starts with the name)
+    tl.to(
+      ctx.querySelectorAll('.hero__title-phrase--name'),
+      {
+        opacity: 1,
+        x: 0,
+        filter: 'blur(0px)',
+        clipPath: 'inset(0 0% 0 0)',
+        duration: 0.72,
+        ease: 'power2.out',
+      },
+      0.25,
+    )
 
     // subtitle and actions
     tl.to(ctx.querySelectorAll('.hero__subtitle'), { opacity: 1, y: 0, duration: 0.5 }, 1.05)
@@ -134,19 +137,81 @@ onMounted(() => {
 
     // gentle glow breathing loop (keeps subtle motion after entrance)
     gsap.to(ctx.querySelectorAll('.hero__glow'), { scale: 1.05, duration: 6, yoyo: true, repeat: -1, ease: 'sine.inOut', delay: 1.6 })
+
+    const namePhrase = ctx.querySelector('.hero__title-phrase--name')
+    const qualityPhrase = ctx.querySelector('.hero__title-phrase--quality')
+    const sweepLine = ctx.querySelector('.hero__title-sweep')
+
+    if (namePhrase && qualityPhrase) {
+      gsap.set(namePhrase, { opacity: 1, x: 0, filter: 'blur(0px)', clipPath: 'inset(0 0% 0 0)', zIndex: 2 })
+      gsap.set(qualityPhrase, { opacity: 0, x: 0, filter: 'blur(1px)', clipPath: 'inset(0 100% 0 0)', zIndex: 1 })
+      if (sweepLine) {
+        gsap.set(sweepLine, { opacity: 0, xPercent: -120 })
+      }
+
+      titleLoop = gsap.timeline({ repeat: -1, repeatDelay: 0.2, delay: 1.8 })
+
+      titleLoop
+        .to({}, { duration: 3.6 })
+        .call(() => {
+          gsap.set(qualityPhrase, { opacity: 0, x: 0, filter: 'blur(1px)', clipPath: 'inset(0 100% 0 0)' })
+          gsap.set(namePhrase, { opacity: 1, x: 0, filter: 'blur(0px)', clipPath: 'inset(0 0% 0 0)' })
+          gsap.set(qualityPhrase, { zIndex: 3 })
+          gsap.set(namePhrase, { zIndex: 2 })
+        })
+        .to(namePhrase, { opacity: 0, x: 4, filter: 'blur(1px)', duration: 0.3, ease: 'power2.inOut' }, 'swap-to-quality')
+        .to(qualityPhrase, { opacity: 1, x: 0, filter: 'blur(0px)', clipPath: 'inset(0 0% 0 0)', duration: 0.3, ease: 'power2.out' }, 'swap-to-quality')
+        .to(sweepLine, { opacity: 0.9, xPercent: 0, duration: 0.22, ease: 'power2.out' }, 'swap-to-quality')
+        .to(sweepLine, { opacity: 0, xPercent: 110, duration: 0.2, ease: 'power1.in' }, 'swap-to-quality+=0.18')
+        .set(namePhrase, { opacity: 0, x: 4, filter: 'blur(1px)', clipPath: 'inset(0 0% 0 100%)' }, 'swap-to-quality+=0.31')
+        .set(qualityPhrase, { opacity: 1, x: 0, filter: 'blur(0px)', clipPath: 'inset(0 0% 0 0)' }, 'swap-to-quality+=0.31')
+        .to({}, { duration: 3.6 })
+        .call(() => {
+          gsap.set(namePhrase, { opacity: 0, x: 0, filter: 'blur(1px)', clipPath: 'inset(0 100% 0 0)' })
+          gsap.set(qualityPhrase, { opacity: 1, x: 0, filter: 'blur(0px)', clipPath: 'inset(0 0% 0 0)' })
+          gsap.set(namePhrase, { zIndex: 3 })
+          gsap.set(qualityPhrase, { zIndex: 2 })
+        })
+        .to(qualityPhrase, { opacity: 0, x: 4, filter: 'blur(1px)', duration: 0.3, ease: 'power2.inOut' }, 'swap-to-name')
+        .to(namePhrase, { opacity: 1, x: 0, filter: 'blur(0px)', clipPath: 'inset(0 0% 0 0)', duration: 0.3, ease: 'power2.out' }, 'swap-to-name')
+        .to(sweepLine, { opacity: 0.9, xPercent: 0, duration: 0.22, ease: 'power2.out' }, 'swap-to-name')
+        .to(sweepLine, { opacity: 0, xPercent: 110, duration: 0.2, ease: 'power1.in' }, 'swap-to-name+=0.18')
+        .set(qualityPhrase, { opacity: 0, x: 4, filter: 'blur(1px)', clipPath: 'inset(0 0% 0 100%)' }, 'swap-to-name+=0.31')
+        .set(namePhrase, { opacity: 1, x: 0, filter: 'blur(0px)', clipPath: 'inset(0 0% 0 0)' }, 'swap-to-name+=0.31')
+
+      visibilityHandler = () => {
+        if (!titleLoop) return
+        if (document.hidden) {
+          titleLoop.pause()
+        } else {
+          titleLoop.resume()
+        }
+      }
+
+      document.addEventListener('visibilitychange', visibilityHandler)
+    }
   }
 })
 
 onBeforeUnmount(() => {
   const el = mediaRef.value
-  if (!el) return
-  el.removeEventListener('pointermove', handleMove)
-  el.removeEventListener('pointerenter', handleEnter)
-  el.removeEventListener('pointerleave', handleLeave)
-  if (rafId) cancelAnimationFrame(rafId)
+  if (el) {
+    el.removeEventListener('pointermove', handleMove)
+    el.removeEventListener('pointerenter', handleEnter)
+    el.removeEventListener('pointerleave', handleLeave)
+  }
+  if (rafId !== null) cancelAnimationFrame(rafId)
   if (tl) {
     tl.kill()
     tl = null
+  }
+  if (titleLoop) {
+    titleLoop.kill()
+    titleLoop = null
+  }
+  if (visibilityHandler) {
+    document.removeEventListener('visibilitychange', visibilityHandler)
+    visibilityHandler = null
   }
 })
 </script>
@@ -160,7 +225,18 @@ onBeforeUnmount(() => {
             <span>Software Engineer</span>
           </div>
           <h1 class="hero__title">
-            Quality-first <span>engineering.</span>
+            <span class="sr-only">Alexander Heffernan</span>
+            <span class="hero__title-rotator" aria-hidden="true">
+              <span class="hero__title-phrase hero__title-phrase--name">
+                <span class="hero__title-line">Alexander</span>
+                <span class="hero__title-line hero__title-line--accent">Heffernan</span>
+              </span>
+              <span class="hero__title-phrase hero__title-phrase--quality">
+                <span class="hero__title-line">Quality-first</span>
+                <span class="hero__title-line hero__title-line--accent">engineering.</span>
+              </span>
+              <span class="hero__title-sweep" aria-hidden="true"></span>
+            </span>
           </h1>
           <p class="hero__subtitle">
             Using AI to move fast — without cutting corners.
@@ -243,13 +319,58 @@ onBeforeUnmount(() => {
 .hero__title {
   font-size: clamp(2.5rem, 4vw, 4rem);
   font-weight: var(--font-weight-bold);
-  line-height: 1.05;
+  line-height: 1.02;
   letter-spacing: -0.02em;
   margin: 0;
 }
 
-.hero__title span {
+.hero__title-rotator {
+  position: relative;
+  display: grid;
+  min-height: 2.15em;
+  overflow: hidden;
+  padding-bottom: 0.14em;
+}
+
+.hero__title-phrase {
+  grid-area: 1 / 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.04em;
+  will-change: opacity, transform, filter, clip-path;
+  overflow: hidden;
+}
+
+.hero__title-sweep {
+  grid-area: 1 / 1;
+  align-self: end;
+  height: 1px;
+  width: 40%;
+  margin-top: auto;
+  background: linear-gradient(90deg, transparent 0%, color-mix(in srgb, var(--accent), #fff 8%) 40%, transparent 100%);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 4;
+}
+
+.hero__title-line {
+  display: block;
+}
+
+.hero__title-line--accent {
   color: var(--accent);
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 .hero__subtitle {
