@@ -149,10 +149,14 @@ onMounted(() => {
         gsap.set(sweepLine, { opacity: 0, xPercent: -120 })
       }
 
-      const holdDuration = 3.6
+      const holdDuration = 2.6
       const outDuration = 0.24
       const gapDuration = 0.08
       const inDuration = 0.28
+      const titleLoopSpeed = 0.5
+      const titleLoopBounce = 1.3
+      const textInOffset = 12 * titleLoopBounce
+      const textOutOffset = 10 * titleLoopBounce
 
       const addSweepMotion = (label: string) => {
         if (!sweepLine || !titleLoop) return
@@ -169,28 +173,29 @@ onMounted(() => {
       }
 
       titleLoop = gsap.timeline({ repeat: -1, repeatDelay: 0.2, delay: 1.8 })
+      titleLoop.timeScale(titleLoopSpeed)
 
       titleLoop
         .to({}, { duration: holdDuration })
         .call(() => {
-          gsap.set(qualityPhrase, { opacity: 0, x: 12, filter: 'blur(1px)', clipPath: 'inset(0 100% 0 0)' })
+          gsap.set(qualityPhrase, { opacity: 0, x: textInOffset, filter: 'blur(1px)', clipPath: 'inset(0 100% 0 0)' })
           gsap.set(namePhrase, { opacity: 1, x: 0, filter: 'blur(0px)', clipPath: 'inset(0 0% 0 0)' })
           gsap.set(qualityPhrase, { zIndex: 3 })
           gsap.set(namePhrase, { zIndex: 2 })
         })
-        .to(namePhrase, { opacity: 0, x: 10, filter: 'blur(1px)', duration: outDuration, ease: 'power2.inOut' }, 'swap-to-quality')
-        .set(namePhrase, { opacity: 0, x: 10, filter: 'blur(1px)', clipPath: 'inset(0 0% 0 100%)' }, `swap-to-quality+=${outDuration}`)
+        .to(namePhrase, { opacity: 0, x: textOutOffset, filter: 'blur(1px)', duration: outDuration, ease: 'power2.inOut' }, 'swap-to-quality')
+        .set(namePhrase, { opacity: 0, x: textOutOffset, filter: 'blur(1px)', clipPath: 'inset(0 0% 0 100%)' }, `swap-to-quality+=${outDuration}`)
         .to(qualityPhrase, { opacity: 1, x: 0, filter: 'blur(0px)', clipPath: 'inset(0 0% 0 0)', duration: inDuration, ease: 'power2.out' }, `swap-to-quality+=${outDuration + gapDuration}`)
         .set(qualityPhrase, { opacity: 1, x: 0, filter: 'blur(0px)', clipPath: 'inset(0 0% 0 0)' }, `swap-to-quality+=${outDuration + gapDuration + inDuration + 0.01}`)
         .to({}, { duration: holdDuration })
         .call(() => {
-          gsap.set(namePhrase, { opacity: 0, x: 12, filter: 'blur(1px)', clipPath: 'inset(0 100% 0 0)' })
+          gsap.set(namePhrase, { opacity: 0, x: textInOffset, filter: 'blur(1px)', clipPath: 'inset(0 100% 0 0)' })
           gsap.set(qualityPhrase, { opacity: 1, x: 0, filter: 'blur(0px)', clipPath: 'inset(0 0% 0 0)' })
           gsap.set(namePhrase, { zIndex: 3 })
           gsap.set(qualityPhrase, { zIndex: 2 })
         })
-        .to(qualityPhrase, { opacity: 0, x: 10, filter: 'blur(1px)', duration: outDuration, ease: 'power2.inOut' }, 'swap-to-name')
-        .set(qualityPhrase, { opacity: 0, x: 10, filter: 'blur(1px)', clipPath: 'inset(0 0% 0 100%)' }, `swap-to-name+=${outDuration}`)
+        .to(qualityPhrase, { opacity: 0, x: textOutOffset, filter: 'blur(1px)', duration: outDuration, ease: 'power2.inOut' }, 'swap-to-name')
+        .set(qualityPhrase, { opacity: 0, x: textOutOffset, filter: 'blur(1px)', clipPath: 'inset(0 0% 0 100%)' }, `swap-to-name+=${outDuration}`)
         .to(namePhrase, { opacity: 1, x: 0, filter: 'blur(0px)', clipPath: 'inset(0 0% 0 0)', duration: inDuration, ease: 'power2.out' }, `swap-to-name+=${outDuration + gapDuration}`)
         .set(namePhrase, { opacity: 1, x: 0, filter: 'blur(0px)', clipPath: 'inset(0 0% 0 0)' }, `swap-to-name+=${outDuration + gapDuration + inDuration + 0.01}`)
 
