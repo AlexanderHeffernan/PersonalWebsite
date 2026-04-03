@@ -341,58 +341,70 @@ async function fetchGitHubActivity(): Promise<GitHubActivity | null> {
     const events = await eventsResponse.json()
     console.log(`Fetched ${events.length} events`)
     
-    // Filter to push events (commits)
-    const pushEvents = events.filter((e: any) => e.type === 'PushEvent')
-    console.log(`Found ${pushEvents.length} total push events`)
+    // Filter to public push events only (don't expose private repo commits)
+    const pushEvents = events.filter((e: any) => e.type === 'PushEvent' && e.public)
+    console.log(`Found ${pushEvents.length} public push events`)
     
-    if (pushEvents.length === 0) {
-      return {
-        isActive: false,
-        lastCommit: null,
-        weekCommits: 0,
-        streak: 0,
-        languages: {},
-        currentRepo: null,
-        timeOfDay: getTimeOfDay(),
-      }
-    }
+    // Extract last commit info from REST events (public only)
+    let lastCommit: GitHubActivity['lastCommit'] = null
+    let currentRepo: string | null = null
+    let isActive = false
 
-    // Last commit info
-    const lastPush = pushEvents[0]
-    const lastCommitDate = new Date(lastPush.created_at)
-    const hoursAgo = (Date.now() - lastCommitDate.getTime()) / (1000 * 60 * 60)
-    
-    // Fetch actual commit message from the commits API
-    let lastCommitMessage = 'Recent commit'
-    try {
+    const lastPush = pushEvents.length > 0 ? pushEvents[0] : null
+    if (lastPush) {
+      const lastCommitDate = new Date(lastPush.created_at)
+      const hoursAgo = (Date.now() - lastCommitDate.getTime()) / (1000 * 60 * 60)
+      isActive = hoursAgo < 24
+
+      // Fetch actual commit message from the commits API
+      let lastCommitMessage = 'Recent commit'
+      try {
+        const repoFullName = lastPush.repo.name
+        const commitSha = lastPush.payload.head
+
+        if (commitSha) {
+          const commitResponse = await fetch(
+            `https://api.github.com/repos/${repoFullName}/commits/${commitSha}`,
+            {
+              headers: {
+                'Authorization': `token ${GITHUB_TOKEN}`,
+                'Accept': 'application/vnd.github.v3+json',
+              },
+            }
+          )
+
+          if (commitResponse.ok) {
+            const commitData = await commitResponse.json()
+            lastCommitMessage = commitData.commit.message.split('\n')[0]
+            console.log(`Fetched commit message: ${lastCommitMessage}`)
+          }
+        }
+      } catch (err) {
+        console.error('Failed to fetch commit message:', err)
+      }
+
       const repoFullName = lastPush.repo.name
       const commitSha = lastPush.payload.head
-      
-      if (commitSha) {
-        const commitResponse = await fetch(
-          `https://api.github.com/repos/${repoFullName}/commits/${commitSha}`,
-          {
-            headers: {
-              'Authorization': `token ${GITHUB_TOKEN}`,
-              'Accept': 'application/vnd.github.v3+json',
-            },
-          }
-        )
-        
-        if (commitResponse.ok) {
-          const commitData = await commitResponse.json()
-          lastCommitMessage = commitData.commit.message.split('\n')[0] // First line only
-          console.log(`Fetched commit message: ${lastCommitMessage}`)
-        }
+      const commitUrl = `https://github.com/${repoFullName}/commit/${commitSha}`
+      currentRepo = repoFullName.split('/')[1]
+
+      const maxLength = 30
+      const truncatedMessage = lastCommitMessage.length > maxLength
+        ? lastCommitMessage.substring(0, maxLength) + '...'
+        : lastCommitMessage
+
+      lastCommit = {
+        message: truncatedMessage,
+        hoursAgo,
+        timeText: formatTimeAgo(hoursAgo),
+        url: commitUrl,
       }
-    } catch (err) {
-      console.error('Failed to fetch commit message:', err)
     }
 
     // Calculate language breakdown from actual repo language data
     const languageStats: Record<string, number> = {}
     const commitsByRepo = contributions?.commitContributionsByRepository || []
-    
+
     // Fetch actual language breakdown for repos committed to this week
     for (const repoData of commitsByRepo) {
       const repoName = repoData.repository.name
@@ -403,11 +415,9 @@ async function fetchGitHubActivity(): Promise<GitHubActivity | null> {
             'Accept': 'application/vnd.github.v3+json',
           },
         })
-        
+
         if (langResponse.ok) {
           const langData = await langResponse.json()
-          // langData is like: { "TypeScript": 12345, "Vue": 5678, "CSS": 1234 }
-          // Weight each repo's languages by commit count
           const commitWeight = repoData.contributions.totalCount
           Object.entries(langData).forEach(([lang, bytes]: [string, any]) => {
             languageStats[lang] = (languageStats[lang] || 0) + (bytes * commitWeight)
@@ -417,44 +427,26 @@ async function fetchGitHubActivity(): Promise<GitHubActivity | null> {
         console.error(`Failed to fetch languages for ${repoName}:`, err)
       }
     }
-    
+
     // Convert to percentages
     const languages: Record<string, number> = {}
     const totalBytes = Object.values(languageStats).reduce((a: number, b: number) => a + b, 0)
     if (totalBytes > 0) {
       Object.entries(languageStats).forEach(([lang, bytes]) => {
         const pct = Math.round((bytes / totalBytes) * 100)
-        if (pct > 0) { // Only include languages with at least 1%
+        if (pct > 0) {
           languages[lang] = pct
         }
       })
     }
-    
+
     console.log('Language breakdown:', languages)
 
-    // Get current repo
-    const currentRepo = lastPush.repo.name.split('/')[1]
-    const repoFullName = lastPush.repo.name
-    const commitSha = lastPush.payload.head
-    const commitUrl = `https://github.com/${repoFullName}/commit/${commitSha}`
-
-    // Use actual language data or fallback to mock
     const finalLanguages = Object.keys(languages).length > 0 ? languages : { TypeScript: 85, Vue: 12, SQL: 3 }
 
-    // Truncate commit message if too long (shorter to prevent wrapping)
-    const maxLength = 30
-    const truncatedMessage = lastCommitMessage.length > maxLength 
-      ? lastCommitMessage.substring(0, maxLength) + '...'
-      : lastCommitMessage
-
     return {
-      isActive: hoursAgo < 24,
-      lastCommit: {
-        message: truncatedMessage,
-        hoursAgo,
-        timeText: formatTimeAgo(hoursAgo),
-        url: commitUrl,
-      },
+      isActive,
+      lastCommit,
       weekCommits,
       streak,
       languages: finalLanguages,

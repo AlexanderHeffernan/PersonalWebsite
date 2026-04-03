@@ -57,18 +57,16 @@ const messages = computed(() => {
   const msgs = []
 
   // 1. Activity status
-  if (!activity.isActive) {
-    if (activity.lastCommit && activity.lastCommit.hoursAgo < 168) {
-      msgs.push(`🟢 ACTIVE THIS WEEK • ${activity.weekCommits} COMMIT${activity.weekCommits !== 1 ? 'S' : ''} THIS WEEK`)
-    } else {
-      msgs.push(`☕ ON BREAK • NO COMMITS THIS WEEK`)
-    }
-  } else {
+  if (activity.isActive) {
     msgs.push(`🟢 ACTIVE TODAY • ${activity.weekCommits} COMMIT${activity.weekCommits !== 1 ? 'S' : ''} THIS WEEK`)
+  } else if (activity.weekCommits > 0) {
+    msgs.push(`🟢 ACTIVE THIS WEEK • ${activity.weekCommits} COMMIT${activity.weekCommits !== 1 ? 'S' : ''} THIS WEEK`)
+  } else {
+    msgs.push(`☕ ON BREAK • NO COMMITS THIS WEEK`)
   }
   
-  // 2. Latest commit with dynamic time prefix
-  if (activity.lastCommit) {
+  // 2. Latest commit with dynamic time prefix (hide if older than 3 days)
+  if (activity.lastCommit && activity.lastCommit.hoursAgo < 72) {
     const msg = activity.lastCommit.message.toUpperCase()
     const hours = activity.lastCommit.hoursAgo
     
