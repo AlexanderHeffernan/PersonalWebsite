@@ -23,6 +23,8 @@ let rafId: number | null = null
 let tl: gsap.core.Timeline | null = null
 let titleLoop: gsap.core.Timeline | null = null
 let visibilityHandler: (() => void) | null = null
+let scrollFastForwardHandler: (() => void) | null = null
+let heroObserver: IntersectionObserver | null = null
 let targetX = 0
 let targetY = 0
 let currentX = 0
@@ -202,6 +204,38 @@ onMounted(() => {
       addSweepMotion('swap-to-quality')
       addSweepMotion('swap-to-name')
 
+      // On first scroll, fast-forward to the first swap so users see it before leaving
+      const swapLabel = titleLoop.labels['swap-to-quality']
+      if (swapLabel !== undefined) {
+        const fastForwardTime = Math.max(0, swapLabel - 0.1)
+        scrollFastForwardHandler = () => {
+          if (tl && tl.progress() < 1) {
+            tl.progress(1)
+          }
+          if (titleLoop && titleLoop.time() < swapLabel) {
+            titleLoop.time(fastForwardTime)
+          }
+          window.removeEventListener('scroll', scrollFastForwardHandler!, { capture: true })
+          scrollFastForwardHandler = null
+        }
+        window.addEventListener('scroll', scrollFastForwardHandler, { capture: true, passive: true })
+      }
+
+      // Pause/resume when hero leaves/enters viewport
+      heroObserver = new IntersectionObserver(
+        (entries) => {
+          const entry = entries[0]
+          if (!titleLoop || !entry) return
+          if (entry.isIntersecting) {
+            titleLoop.resume()
+          } else {
+            titleLoop.pause()
+          }
+        },
+        { threshold: 0.1 },
+      )
+      heroObserver.observe(ctx)
+
       visibilityHandler = () => {
         if (!titleLoop) return
         if (document.hidden) {
@@ -235,6 +269,14 @@ onBeforeUnmount(() => {
   if (visibilityHandler) {
     document.removeEventListener('visibilitychange', visibilityHandler)
     visibilityHandler = null
+  }
+  if (scrollFastForwardHandler) {
+    window.removeEventListener('scroll', scrollFastForwardHandler, { capture: true })
+    scrollFastForwardHandler = null
+  }
+  if (heroObserver) {
+    heroObserver.disconnect()
+    heroObserver = null
   }
 })
 </script>
