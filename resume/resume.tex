@@ -1,0 +1,165 @@
+\documentclass[9pt,letterpaper]{article}
+
+\usepackage[margin=0.46in]{geometry}
+\usepackage{fontspec}
+\usepackage[dvipsnames]{xcolor}
+\definecolor{ResumeText}{RGB}{22,25,31}
+\definecolor{ResumeMuted}{RGB}{95,103,115}
+\definecolor{ResumeAccent}{HTML}{FF5722}
+\definecolor{ResumeRule}{RGB}{215,222,230}
+\usepackage[colorlinks=true, urlcolor=ResumeAccent, linkcolor=ResumeAccent]{hyperref}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{parskip}
+\usepackage{multicol}
+\usepackage{needspace}
+\usepackage{microtype}
+
+\setmainfont{Helvetica Neue}[
+  UprightFont = *,
+  BoldFont = * Medium,
+  ItalicFont = * Italic,
+  BoldItalicFont = * Medium Italic
+]
+\newfontfamily\displayfont{Helvetica Neue}[
+  UprightFont = * Bold,
+  BoldFont = * Bold
+]
+
+\pagestyle{empty}
+\setlength{\parindent}{0pt}
+\setlength{\tabcolsep}{0pt}
+\renewcommand{\arraystretch}{1.0}
+\setlength{\columnsep}{0.36in}
+\setlist[itemize]{leftmargin=1.1em, itemsep=0.12em, topsep=0.15em, parsep=0em, partopsep=0em}
+
+\color{ResumeText}
+
+\titleformat{\section}
+  {\displayfont\fontsize{13.5}{15.5}\selectfont\color{ResumeAccent}}
+  {}
+  {0pt}
+  {}
+  [\vspace{0.35em}\color{ResumeRule}\titlerule]
+\titlespacing*{\section}{0pt}{0.82em}{0.56em}
+
+\newcommand{\resumeHeader}[1]{{\displayfont\fontsize{24}{26}\selectfont #1}}
+\newcommand{\resumeTitle}[1]{{\fontsize{11.2}{12.8}\selectfont\bfseries\color{ResumeAccent} #1}}
+\newcommand{\muted}[1]{{\color{ResumeMuted} #1}}
+\newcommand{\smallmuted}[1]{{\small\color{ResumeMuted} #1}}
+\newcommand{\headerlink}[2]{{\small{\hypersetup{urlcolor=ResumeText}\href{#1}{#2}}}}
+
+\newcommand{\contactrow}[1]{{\small #1}}
+
+\newcommand{\resumeRole}[4]{
+  \Needspace{4\baselineskip}
+  \vspace{0.12em}
+  \textbf{#1} \hfill \textbf{#2} \\
+  \textit{\small #3} \hfill \textit{\small #4} \\
+  \vspace{0.1em}
+}
+
+\newcommand{\resumeProject}[4]{
+  \Needspace{4\baselineskip}
+  \vspace{0.12em}
+  \textbf{#1} \hfill {\small #2} \\
+  \smallmuted{#3} \\
+  \vspace{0.08em}
+  #4
+}
+
+\begin{document}
+\raggedright
+\small
+
+\resumeHeader{Alexander Heffernan}
+
+\vspace{0.08em}
+\resumeTitle{Final-Year Software Engineering Student}
+
+\vspace{0.42em}
+\contactrow{Wellington, New Zealand \textbar\ +64 22 521 7700 \textbar\ \headerlink{mailto:heffernan.alexander@icloud.com}{heffernan.alexander@icloud.com}} \\
+\contactrow{\headerlink{https://alexheffernan.dev}{alexheffernan.dev} \textbar\ \headerlink{https://github.com/alexanderheffernan}{github.com/alexanderheffernan} \textbar\ \headerlink{https://linkedin.com/in/alexander-heffernan}{linkedin.com/in/alexander-heffernan}}
+
+\section*{Profile}
+Final-year Software Engineering student specialising in Artificial Intelligence, with recent internship experience building production AI agents, integrations, and platform improvements for real customer workflows. Product-minded full-stack engineer who uses AI to move fast without cutting corners, with a strong focus on maintainability and polished software.
+
+\section*{Experience}
+\resumeRole{Autohive}{Wellington, NZ}{AI Agent Developer}{Nov 2025 -- Feb 2026}
+\begin{itemize}
+  \item Designed and shipped production-ready AI agents and multi-agent workflows spanning research, task management, social media orchestration, and image and video generation.
+  \item Delivered major integrations including Facebook, Instagram, Xero, Nano Banana Pro, and Veo 3.1 for customer-facing AI workflows.
+  \item Worked across OAuth flows and billing architecture to support reliable third-party integrations and scalable production AI features.
+  \item Contributed across the full stack in C\#/.NET, including chat UI improvements, audit logging, LLM integration, and platform fixes.
+\end{itemize}
+
+\resumeRole{HomeStagedIT}{Wellington, NZ}{Software Developer (Contract)}{Mar 2024 -- Present}
+\begin{itemize}
+  \item Contributed to HomeStagedIT, a web platform for home staging companies to manage jobs, contacts, inventory, and day-to-day operations, plus its HomeSearched desktop companion app.
+  \item Led a platform redesign through style guidelines, UI mock-ups, and frontend implementation that improved usability and consistency.
+  \item Building a new API layer as my honours project between the apps, website, and database to support a cleaner, more scalable system.
+  \item Working across .NET, Vue.js, Tauri, Python, Rust, and SQL across the platform, companion apps, and supporting data layer.
+\end{itemize}
+
+\resumeRole{External Reporting Board (XRB)}{Wellington, NZ}{Website Administrator / Office Assistant}{Dec 2020 -- Mar 2024}
+\begin{itemize}
+  \item Managed day-to-day website operations in Silverstripe CMS and contributed to the 2022 redesign of the public-facing XRB website.
+  \item Worked with internal and external stakeholders to deliver content, structure, and presentation changes in an early professional role.
+\end{itemize}
+
+\section*{Projects}
+\resumeProject
+  {Rashun}
+  {\href{https://rashun.alexheffernan.dev}{Live} \textbar\ \href{https://github.com/AlexanderHeffernan/Rashun}{GitHub}}
+  {Swift, SwiftUI, AppKit, CI/CD, macOS}
+  {
+    \begin{itemize}
+      \item Built a macOS menu bar app that gives developers an at-a-glance view of remaining AI quota with usage rings, history graphs, forecasts, and smart notifications.
+      \item Added a cross-platform CLI for scripted usage checks and JSON output across macOS, Linux, and Windows, turning Rashun into both a desktop tool and developer workflow utility.
+    \end{itemize}
+  }
+
+\resumeProject
+  {Node Race}
+  {\href{https://noderace.online}{Live} \textbar\ \href{https://github.com/Team-GitGud/node-race}{GitHub}}
+  {Vue.js, TypeScript, Node.js, WebSockets, Docker}
+  {
+    \begin{itemize}
+      \item Led a six-person team as Scrum Master and full-stack developer to build a real-time multiplayer game that helps students learn tree traversals through competition and live feedback.
+      \item Built core frontend architecture, real-time gameplay communication, leaderboards, and tutor-facing session tooling for a product used in real university labs.
+    \end{itemize}
+  }
+
+\vspace{0.02em}
+\begin{multicols}{2}
+\section*{Skills}
+\textbf{Languages} \\
+TypeScript, C\#, Java, Rust, Python, Swift
+
+\vspace{0.2em}
+\textbf{Frameworks \& Tools} \\
+.NET, Vue, Node.js, REST APIs, WebSockets, SQL, Docker, GitHub Actions, Azure DevOps
+
+\vspace{0.2em}
+\textbf{Strengths} \\
+Full-stack product engineering, AI-assisted development, maintainable systems, UI/UX-minded implementation
+
+\columnbreak
+
+\section*{Education}
+\textbf{Victoria University of Wellington} \\
+\smallmuted{Bachelor of Engineering with Honours, Software Engineering} \\
+\smallmuted{Expected Nov 2026} \\
+Specialisation in Artificial Intelligence \\
+School of Engineering Dean's List (2023, 2024)
+
+\vspace{0.25em}
+\textbf{St Patrick's College Silverstream} \\
+\smallmuted{Upper Hutt, NZ} \\
+Dux (2022) \\
+NCEA Levels 1--3 with Excellence
+\end{multicols}
+
+\end{document}
