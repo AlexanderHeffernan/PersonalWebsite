@@ -81,6 +81,12 @@ onMounted(() => {
   el.addEventListener('pointerenter', handleEnter)
   el.addEventListener('pointerleave', handleLeave)
   rafId = requestAnimationFrame(animate)
+  if (prefersReducedMotion() && heroRef.value) {
+    // Clear inline opacity:0 for users who prefer reduced motion (no GSAP will run)
+    heroRef.value.querySelectorAll<HTMLElement>('[style*="opacity"]').forEach((el) => {
+      el.style.removeProperty('opacity')
+    })
+  }
   if (!prefersReducedMotion() && heroRef.value) {
     const ctx = heroRef.value
 
@@ -116,26 +122,25 @@ onMounted(() => {
     // eyebrow slide-in
     tl.to(ctx.querySelectorAll('.hero__eyebrow'), { opacity: 1, y: 0, duration: 0.45 }, 0.12)
 
-    // title entrance (starts with the name)
+    // title entrance — clip-path wipe matching the swap animation
     tl.to(
       ctx.querySelectorAll('.hero__title-phrase--name'),
       {
         opacity: 1,
-        x: 0,
         filter: 'blur(0px)',
         clipPath: 'inset(0 0% 0 0)',
-        duration: 0.72,
+        duration: 0.55,
         ease: 'power2.out',
       },
       0.25,
     )
 
     // subtitle and actions
-    tl.to(ctx.querySelectorAll('.hero__subtitle'), { opacity: 1, y: 0, duration: 0.5 }, 1.05)
-    tl.to(ctx.querySelectorAll('.hero__actions .btn'), { opacity: 1, y: 0, scale: 1, duration: 0.45, stagger: 0.08 }, 1.2)
+    tl.to(ctx.querySelectorAll('.hero__subtitle'), { opacity: 1, y: 0, duration: 0.5 }, 0.55)
+    tl.to(ctx.querySelectorAll('.hero__actions .btn'), { opacity: 1, y: 0, scale: 1, duration: 0.45, stagger: 0.08 }, 0.65)
 
     // meta line
-    tl.to(ctx.querySelectorAll('.hero__meta'), { opacity: 1, y: 0, duration: 0.45 }, 1.5)
+    tl.to(ctx.querySelectorAll('.hero__meta'), { opacity: 1, y: 0, duration: 0.45 }, 0.85)
 
     // gentle glow breathing loop (keeps subtle motion after entrance)
     gsap.to(ctx.querySelectorAll('.hero__glow'), { scale: 1.05, duration: 6, yoyo: true, repeat: -1, ease: 'sine.inOut', delay: 1.6 })
@@ -145,7 +150,7 @@ onMounted(() => {
     const sweepLine = ctx.querySelector('.hero__title-sweep')
 
     if (namePhrase && qualityPhrase) {
-      gsap.set(namePhrase, { opacity: 1, x: 0, filter: 'blur(0px)', clipPath: 'inset(0 0% 0 0)', zIndex: 2 })
+      gsap.set(namePhrase, { zIndex: 2 })
       gsap.set(qualityPhrase, { opacity: 0, x: 0, filter: 'blur(1px)', clipPath: 'inset(0 100% 0 0)', zIndex: 1 })
       if (sweepLine) {
         gsap.set(sweepLine, { opacity: 0, xPercent: -120 })
@@ -286,44 +291,44 @@ onBeforeUnmount(() => {
     <div class="hero__container">
       <div class="hero__grid">
         <div class="hero__content">
-          <div class="hero__eyebrow">
+          <div class="hero__eyebrow" style="opacity:0">
             <span>Software Engineer</span>
           </div>
           <h1 class="hero__title">
             <span class="sr-only">Alexander Heffernan</span>
             <span class="hero__title-rotator" aria-hidden="true">
-              <span class="hero__title-phrase hero__title-phrase--name">
+              <span class="hero__title-phrase hero__title-phrase--name" style="opacity:0">
                 <span class="hero__title-line">Alexander</span>
                 <span class="hero__title-line hero__title-line--accent">Heffernan</span>
               </span>
-              <span class="hero__title-phrase hero__title-phrase--quality">
+              <span class="hero__title-phrase hero__title-phrase--quality" style="opacity:0">
                 <span class="hero__title-line">Quality-first</span>
                 <span class="hero__title-line hero__title-line--accent">engineering.</span>
               </span>
               <span class="hero__title-sweep" aria-hidden="true"></span>
             </span>
           </h1>
-          <p class="hero__subtitle">
+          <p class="hero__subtitle" style="opacity:0">
             Using AI to move fast — without cutting corners.
           </p>
           <div class="hero__actions">
-            <a class="btn btn--primary" href="#projects">
+            <a class="btn btn--primary" href="#projects" style="opacity:0">
               View Projects
             </a>
-            <a class="btn btn--secondary" href="#contact">
+            <a class="btn btn--secondary" href="#contact" style="opacity:0">
               Contact
             </a>
-            <a class="btn btn--secondary" href="/resume.pdf">
+            <a class="btn btn--secondary" href="/resume.pdf" style="opacity:0">
               Resume
             </a>
           </div>
-          <div class="hero__meta">
+          <div class="hero__meta" style="opacity:0">
             <ActivityTicker v-if="activity" :activity="activity" />
             <span v-else>Building quality software • One commit at a time</span>
           </div>
         </div>
-        <div ref="mediaRef" class="hero__media">
-          <div class="hero__glow" aria-hidden="true"></div>
+        <div ref="mediaRef" class="hero__media" style="opacity:0">
+          <div class="hero__glow" aria-hidden="true" style="opacity:0"></div>
           <div class="hero__frame-wrap">
             <div class="hero__frame">
               <img
