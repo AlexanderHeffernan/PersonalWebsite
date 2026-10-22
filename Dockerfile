@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 
 # Build stage
-FROM node:20-alpine AS builder
+FROM node:24.22.1-alpine AS builder
 
 # Install build dependencies for native modules
 RUN apk add --no-cache python3 make g++ sqlite-dev
@@ -19,7 +19,7 @@ RUN npm run postinstall
 RUN npm run build
 
 # Production stage
-FROM node:20-alpine
+FROM node:24.22.1-alpine
 
 # Install sqlite-libs (required for better-sqlite3 at runtime)
 RUN apk add --no-cache sqlite-libs

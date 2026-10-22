@@ -28,7 +28,11 @@ A long-lived Nuxt 4 SSR portfolio with a planned in-app CMS and SQLite-backed co
 
 ## Local Development
 
+Use Node.js 24.22.1 or a newer patched Node 24 LTS release (`nvm use` reads `.nvmrc`).
+Both Docker stages use the same patched Node release.
+
 ```bash
+npm ci
 npm run dev
 ```
 
@@ -112,4 +116,3 @@ Checklist is meant to be updated as work progresses. If you complete a step, che
 - Keep database access server-only.
 - Keep changes small and vertical (UI + API + data) where possible.
 - Avoid adding dependencies unless necessary; justify them briefly.
-
